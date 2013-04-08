@@ -4,7 +4,7 @@ class m110805_153437_installYiiUser extends CDbMigration
 {
 	protected $MySqlOptions = 'ENGINE=InnoDB CHARSET=utf8';
     private $_model;
-    
+
 	public function safeUp()
 	{
         if (!Yii::app()->getModule('user')) {
@@ -20,10 +20,6 @@ class m110805_153437_installYiiUser extends CDbMigration
             return false;
         }
         Yii::import('user.models.User');
-        
-        // initialize user object and set current dbConnection
-        $this->_model = new User;
-        $this->_model->db = $this->dbConnection;
 
         //*
         switch ($this->dbType()) {
@@ -66,7 +62,7 @@ class m110805_153437_installYiiUser extends CDbMigration
                         "visible" => "int(1) NOT NULL DEFAULT 0",
                     ), $this->MySqlOptions);
                 break;
-            
+
             case "sqlite":
             default:
                     $this->createTable(Yii::app()->getModule('user')->tableUsers, array(
@@ -109,21 +105,22 @@ class m110805_153437_installYiiUser extends CDbMigration
                 break;
         }//*/
 
+
         if (in_array('--interactive=0',$_SERVER['argv'])) {
-            $this->_model->username = 'admin';
-            $this->_model->email = 'webmaster@example.com';
-            $this->_model->password = 'admin';
+            $username = 'admin';
+            $email = 'webmaster@example.com';
+            $password = 'admin';
         } else {
-            $this->readStdinUser('Admin login', 'username', 'admin');
-            $this->readStdinUser('Admin email', 'email', 'webmaster@example.com');
-            $this->readStdinUser('Admin password', 'password', 'admin');
+            $username = $this->readStdinUser('Admin login', 'username', 'admin');
+            $email = $this->readStdinUser('Admin email', 'email', 'webmaster@example.com');
+            $password = $this->readStdinUser('Admin password', 'password', 'admin');
         }
 
         $this->insert(Yii::app()->getModule('user')->tableUsers, array(
             "id" => "1",
-            "username" => $this->_model->username,
-            "password" => Yii::app()->getModule('user')->encrypting($this->_model->password),
-            "email" => $this->_model->email,
+            "username" => $username,
+            "password" => Yii::app()->getModule('user')->encrypting($password),
+            "email" => $email,
             "activkey" => Yii::app()->getModule('user')->encrypting(microtime()),
             "createtime" => time(),
             "lastvisit" => "0",

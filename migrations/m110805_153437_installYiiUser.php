@@ -189,19 +189,18 @@ class m110805_153437_installYiiUser extends CDbMigration
         return $type;
     }
 
-    private function readStdin($prompt, $valid_inputs, $default = '') {
-        while(!isset($input) || (is_array($valid_inputs) && !in_array($input, $valid_inputs)) || ($valid_inputs == 'is_file' && !is_file($input))) {
-            echo $prompt;
-            $input = strtolower(trim(fgets(STDIN)));
-            if(empty($input) && !empty($default)) {
-                $input = $default;
-            }
-        }
-        return $input;
-    }
-
     private function readStdinUser($prompt, $field, $default = '') {
+        // initialize user object and set current dbConnection, after creating user table
+        $this->_model = new User;
+        $this->_model->db = $this->dbConnection;
+        //echo $this->_model->db->connectionString;
+
         while(!isset($input) || !$this->_model->validate(array($field))) {
+
+            if ($this->_model->hasErrors()) {
+                foreach ($this->_model->errors AS $messages) foreach($messages AS $msg) echo $msg."\n";
+            }
+
             echo $prompt.(($default)?" [$default]":'').': ';
             $input = (trim(fgets(STDIN)));
             if(empty($input) && !empty($default)) {

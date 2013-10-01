@@ -86,7 +86,12 @@ class UserModule extends CWebModule
 	 * @var boolean
 	 */
 	public $captcha = array('registration'=>true);
-	
+
+    /**
+     * @var boolean
+     */
+    public $customMessageCatalog = "UserModule";
+
 	/**
 	 * @var boolean
 	 */
@@ -151,10 +156,10 @@ class UserModule extends CWebModule
 	 * @return string
 	 */
 	public static function t($str='',$params=array(),$dic='user') {
-		if (Yii::t("UserModule", $str)==$str)
+		if (Yii::t(Yii::app()->getModule('user')->customMessageCatalog, $str)==$str)
 		    return Yii::t("UserModule.".$dic, $str, $params);
         else
-            return Yii::t("UserModule", $str, $params);
+            return Yii::t(Yii::app()->getModule('user')->customMessageCatalog, $str, $params);
 	}
 	
 	/**

@@ -56,7 +56,7 @@ class UserModule extends CWebModule
 	 * @var boolean
 	 * @desc allow to user edit profile
 	 */
-	public $allowUserEditProfile = false;    
+	public $allowUserEditProfile = true;    
     
     /**
 	 * @var boolean

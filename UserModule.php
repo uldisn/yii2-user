@@ -42,6 +42,24 @@ class UserModule extends CWebModule
 	
 	/**
 	 * @var boolean
+	 * @desc allow guests register
+	 */
+	public $allowGuestRegister = true;
+
+    /**
+	 * @var boolean
+	 * @desc show for user users list
+	 */
+	public $showUserList = true;
+
+	/**
+	 * @var boolean
+	 * @desc allow to user edit profile
+	 */
+	public $allowUserEditProfile = false;    
+    
+    /**
+	 * @var boolean
 	 * @desc activate user on registration (only $sendActivationMail = false)
 	 */
 	public $activeAfterRegister=false;
@@ -127,6 +145,7 @@ class UserModule extends CWebModule
 			'user.models.*',
 			'user.components.*',
 		));
+        $this->defaultController = 'user';
 	}
 	
 	public function getBehaviorsFor($componentName){

@@ -33,8 +33,8 @@ class ProfileController extends Controller
 				'expression'=>'(UserModule::isAdmin() || Yii::app()->getModule(\'user\')->allowUserEditProfile)',
 			),
 			array('allow',  // allow all user view own profile
-				'actions'=>array('profile'),
-				'users'=>array('*'),
+				'actions'=>array('profile','changepassword'),
+				'users'=>array('@'), //autentificated users
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),

@@ -48,11 +48,19 @@ class ProfileController extends Controller
 	public function actionProfile()
 	{
 		$model = $this->loadUser();
-	    $this->render('profile',array(
-	    	'model'=>$model,
-			'profile'=>$model->profile,
-	    ));
-	}
+        if (DbrUser::isCustomerOfficeUser()) {
+            $this->layout='//layouts/column1';
+            $this->render('ace_profile', array(
+                'model' => $model,
+                'profile' => $model->profile,
+            ));
+        } else {
+            $this->render('profile', array(
+                'model' => $model,
+                'profile' => $model->profile,
+            ));
+        }
+    }
 
 
 	/**
@@ -115,7 +123,17 @@ class ProfileController extends Controller
 						$this->redirect(array("profile"));
 					}
 			}
-			$this->render('changepassword',array('model'=>$model));
+            
+            if (DbrUser::isCustomerOfficeUser()) {
+                $this->layout='//layouts/column1';
+                $this->render('ace_changepassword', array(
+                    'model' => $model,
+                ));
+            } else {
+                $this->render('changepassword', array(
+                    'model' => $model,
+                ));
+            }            
 	    }
 	}
 

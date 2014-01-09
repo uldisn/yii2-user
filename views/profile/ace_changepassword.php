@@ -1,6 +1,5 @@
 <?php $this->pageTitle=Yii::app()->name . ' - '.UserModule::t("Change password");?>
 
-<h1><?php echo UserModule::t("Change password"); ?></h1>
 <div class="crud-form">
 <?php 
     

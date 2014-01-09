@@ -1,9 +1,7 @@
 <?php $this->pageTitle=Yii::app()->name . ' - '.UserModule::t("Profile");
 
 ?>
-<h2><?php echo UserModule::t('Your profile'); ?></h2>
-<div class="row">
-    <div class="span7">
+<div class="span7">
         
 <?php if(Yii::app()->user->hasFlash('profileMessage')): ?>
 <div class="success">
@@ -29,4 +27,4 @@
       
         
 
-    </div></div>
+</div>

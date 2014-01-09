@@ -4,7 +4,7 @@ class ProfileController extends Controller
 {
 	public $defaultAction = 'profile';
 	public $layout='//layouts/column2';
-
+    public $contentHeader = FALSE;
 	/**
 	 * @var CActiveRecord the currently loaded data model instance.
 	 */
@@ -49,7 +49,8 @@ class ProfileController extends Controller
 	{
 		$model = $this->loadUser();
         if (DbrUser::isCustomerOfficeUser()) {
-            $this->layout='//layouts/column1';
+            $this->contentHeader = UserModule::t('Your profile');
+            $this->layout='//layouts/ace';
             $this->render('ace_profile', array(
                 'model' => $model,
                 'profile' => $model->profile,
@@ -125,7 +126,8 @@ class ProfileController extends Controller
 			}
             
             if (DbrUser::isCustomerOfficeUser()) {
-                $this->layout='//layouts/column1';
+                $this->contentHeader = UserModule::t('Change password');
+                $this->layout='//layouts/ace';
                 $this->render('ace_changepassword', array(
                     'model' => $model,
                 ));

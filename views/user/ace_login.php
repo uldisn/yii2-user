@@ -9,8 +9,7 @@
 								<div class="center">
 									<h1>
 										<i class="icon-leaf green"></i>
-										<span class="red">Parkoil</span>
-										<span class="white">Application</span>
+										<span class="red"><?php echo Yii::app()->name;?></span>
 									</h1>
 								</div>
 							</div>

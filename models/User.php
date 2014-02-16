@@ -203,4 +203,18 @@ class User extends CActiveRecord
         }
         return parent::afterSave();
     }
+    
+    public function behaviors() {
+        return array_merge(
+                parent::behaviors(), array(
+            //auditrail       
+            'LoggableBehavior' => array(
+                'class' => 'LoggableBehavior',
+                'ignored' => array(
+                    'password',
+                )
+            ),
+        ));
+    }
+
 }

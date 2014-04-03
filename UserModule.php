@@ -139,6 +139,8 @@ class UserModule extends CWebModule
         'path'=>'zii.widgets.CDetailView',
         'options'=>array(),
     );
+    
+    public $UserAdminRoles = array();
 	
 	static private $_user;
 	static private $_users=array();

@@ -28,6 +28,10 @@ class AdminController extends Controller
 				'actions'=>array('admin','delete','create','update','view'),
 				'users'=>UserModule::getAdmins(),
 			),
+			array('allow', // for UserAdmin
+				'actions'=>array('admin','create','update','view'),
+				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
+			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -38,6 +42,7 @@ class AdminController extends Controller
 	 */
 	public function actionAdmin()
 	{
+        $this->layout='';
 		$model=new User('search');
         $model->unsetAttributes();  // clear any default values
         if(isset($_GET['User']))
@@ -46,15 +51,7 @@ class AdminController extends Controller
         $this->render('index',array(
             'model'=>$model,
         ));
-		/*$dataProvider=new CActiveDataProvider('User', array(
-			'pagination'=>array(
-				'pageSize'=>Yii::app()->controller->module->user_page_size,
-			),
-		));
 
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));//*/
 	}
 
 
@@ -63,6 +60,100 @@ class AdminController extends Controller
 	 */
 	public function actionView()
 	{
+        $this->layout='';
+        $model = $this->loadModel();
+        
+        //update record
+        if (isset($_POST['save_user_roles'])) {
+
+            //cheked roles
+            $aChecked = Authassignment::model()->getUserRoles($model->id);            
+            
+            //get in form checked
+            $aPostRole = array();
+            if (isset($_POST['user_role_name'])) {
+                foreach ($_POST['user_role_name'] as $nRoleId) {
+                    $aPostRole[] = $nRoleId;
+                }
+            }
+            $aDelRole = array_diff($aChecked, $aPostRole);
+            $aNewRole = array_diff($aPostRole, $aChecked);
+
+            $UserAdminRoles = Yii::app()->getModule('user')->UserAdminRoles;
+            foreach ($aNewRole as $sRoleName) {
+                // can not add no User Admin roles defined in main config
+                if(!in_array($sRoleName,$UserAdminRoles)){
+                    continue;
+                }
+                $aa_model = new Authassignment;
+                $aa_model->itemname = $sRoleName;
+                $aa_model->userid = $model->id;
+                if (!$aa_model->save()) {
+                    print_r($aa_model->errors);
+                    exit;
+                }
+            }
+
+            if(!empty($aDelRole)){
+                Authassignment::model()->deleteAll(
+                    "`userid` = :userid AND itemname in('".implode("','",$aDelRole)."')",
+                array(':userid' => $model->id)
+                );            
+            }
+
+            //checked companies
+            $aUserCompanies = CcucUserCompany::model()->getUserCompnies($model->id,CcucUserCompany::CCUC_STATUS_SYS);
+            $aChecked = array();
+            foreach($aUserCompanies as $UC){
+                $aChecked[] = $UC->ccuc_ccmp_id;
+            }
+            
+            //get in form checked
+            $aPostSysCcmp = array();
+            if (isset($_POST['user_sys_ccmp_id'])) {
+                foreach ($_POST['user_sys_ccmp_id'] as $ccmp_id) {
+                    $aPostSysCcmp[] = $ccmp_id;
+                }
+            }
+            $aDelSysCcmpid = array_diff($aChecked, $aPostSysCcmp);
+            $aNewSysCcmpid = array_diff($aPostSysCcmp, $aChecked);
+
+            $list = array();
+            foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
+                $list[$mCcmp->ccucCcmp->ccmp_id] = 1;
+            } 
+            
+            foreach ($aNewSysCcmpid as $cmmp_id) {
+                // can not add no User Admin sys ccmp
+                if(!isset($list[$cmmp_id])){
+                    continue;
+                }
+                
+                        //create ccuc (company <==> person)
+                $mCcuc = new CcucUserCompany;
+                $mCcuc->ccuc_ccmp_id = $cmmp_id;
+                $mCcuc->ccuc_status = CcucUserCompany::CCUC_STATUS_SYS;
+                $mCcuc->ccuc_person_id = $model->profile->person_id;
+                $mCcuc->save();    
+                if (!$mCcuc->save()) {
+                    print_r($mCcuc->errors);
+                    exit;
+                }
+            }
+
+            if(!empty($aDelSysCcmpid)){
+                CcucUserCompany::model()->deleteAll(
+                    "`ccuc_status` = :ccuc_status "
+                        . " AND `ccuc_person_id` = :ccuc_person_id "
+                        . " AND ccuc_ccmp_id in('".implode("','",$aDelSysCcmpid)."')",
+                array(
+                    ':ccuc_person_id' => $model->profile->person_id,
+                    ':ccuc_status' => CcucUserCompany::CCUC_STATUS_SYS
+                    )
+                );            
+            }
+        }
+        
 		$model = $this->loadModel();
 		$this->render('view',array(
 			'model'=>$model,
@@ -75,6 +166,7 @@ class AdminController extends Controller
 	 */
 	public function actionCreate()
 	{
+        $this->layout='';
 		$model=new User;
 		$profile=new Profile;
 		$this->performAjaxValidation(array($model,$profile));
@@ -89,6 +181,24 @@ class AdminController extends Controller
 				if($model->save()) {
 					$profile->user_id=$model->id;
 					$profile->save();
+                    if (Yii::app()->sysCompany->getActiveCompany()){
+                        
+                        //create person
+                        $model_person = new Person;
+                        $model_person->first_name = $profile->first_name;
+                        $model_person->last_name = $profile->last_name;
+                        $model_person->email = $profile->email;
+                        $model_person->phone = $profile->phone;
+                        $model_person->user_id = $model->id;
+                        $model_person->save();
+                        
+                        //create ccuc (company <==> person)
+                        $mCcuc = new CcucUserCompany;
+                        $mCcuc->ccuc_ccmp_id = Yii::app()->sysCompany->getActiveCompany();
+                        $mCcuc->ccuc_status = Yii::app()->sysCompany->ccuc_status;
+                        $mCcuc->ccuc_person_id = $model_person->primaryKey;
+                        $mCcuc->save();                    
+                    }
 				}
 				$this->redirect(array('view','id'=>$model->id));
 			} else $profile->validate();
@@ -181,9 +291,13 @@ class AdminController extends Controller
 		if($this->_model===null)
 		{
 			if(isset($_GET['id']))
-				$this->_model=User::model()->notsafe()->findbyPk($_GET['id']);
-			if($this->_model===null)
+            {
+                $this->_model=User::model()->is_sys_user()->notsafe()->findbyPk($_GET['id']);
+            }    
+			if($this->_model===null )
 				throw new CHttpException(404,'The requested page does not exist.');
+            
+            
 		}
 		return $this->_model;
 	}

@@ -107,7 +107,8 @@ class User extends CActiveRecord
 	
 	public function scopes()
     {
-        return array(
+        
+        $scope =  array(
             'active'=>array(
                 'condition'=>'status='.self::STATUS_ACTIVE,
             ),
@@ -118,12 +119,29 @@ class User extends CActiveRecord
                 'condition'=>'status='.self::STATUS_BANNED,
             ),
             'superuser'=>array(
-                'condition'=>'superuser=1',
+                'condition' => 'superuser=1',
             ),
             'notsafe'=>array(
             	'select' => 'id, username, password, email, activkey, create_at, lastvisit_at, superuser, status',
             ),
+            'is_sys_user'=>array(
+            	'select' => 'id, username, password, email, activkey, create_at, lastvisit_at, superuser, status',
+            ),
         );
+
+        if (!Yii::app()->user->isGuest && Yii::app()->sysCompany->getActiveCompany()){
+            $scope['is_sys_user'] = array(
+            	'join' => "INNER JOIN person p "
+                            . " ON p.user_id = user.id "
+                            . "INNER JOIN ccuc_user_company "
+                            . " ON p.id = ccuc_person_id "
+                                . " AND ccuc_status='" . Yii::app()->sysCompany->ccuc_status . "' "
+                                . " AND ccuc_ccmp_id = " . Yii::app()->sysCompany->getActiveCompany()
+            );
+        }     
+        
+        return $scope;
+        
     }
 	
 	public function defaultScope()
@@ -173,6 +191,12 @@ class User extends CActiveRecord
         $criteria->compare('superuser',$this->superuser);
         $criteria->compare('status',$this->status);
 
+        if (Yii::app()->sysCompany->getActiveCompanyName()){
+            $criteria->join = " INNER JOIN person ON user.id = person.user_id ";
+            $criteria->join .= " INNER JOIN ccuc_user_company ON person.id = ccuc_person_id and ccuc_status = '".CcucUserCompany::CCUC_STATUS_SYS."' ";
+            $criteria->compare('ccuc_ccmp_id', Yii::app()->sysCompany->getActiveCompany());
+        }          
+        
         return new CActiveDataProvider(get_class($this), array(
             'criteria'=>$criteria,
         	'pagination'=>array(

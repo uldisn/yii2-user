@@ -1,8 +1,8 @@
 <?php
-$this->breadcrumbs=array(
-	UserModule::t('Users')=>array('admin'),
-	$model->username,
-);
+//$this->breadcrumbs=array(
+//	UserModule::t('Users')=>array('admin'),
+//	$model->username,
+//);
 
 
 $this->menu=array(
@@ -13,8 +13,27 @@ $this->menu=array(
     array('label'=>UserModule::t('Manage Profile Field'), 'url'=>array('profileField/admin')),
     array('label'=>UserModule::t('List User'), 'url'=>array('/user')),
 );
+
 ?>
-<h1><?php echo UserModule::t('View User').' "'.$model->username.'"'; ?></h1>
+
+<table class="toolbar"><tr>
+    <td>
+<?php
+                $this->widget("bootstrap.widgets.TbButton", array(
+                    "label" => UserModule::t('Manage Users'),
+                    "icon" => "icon-list-alt",
+                    "url" => array("admin"),
+                    //"visible" => Yii::app()->user->checkAccess("Company.*")
+                ));
+
+?>            
+    </td>
+    </tr>
+</table>    
+    
+<div class="row">
+	<div class="span3">
+        <h2><?php echo UserModule::t('View User').' "'.$model->username.'"'; ?></h2>        
 
 <?php
  
@@ -56,3 +75,84 @@ $this->menu=array(
 		'attributes'=>$attributes,
 	));
 ?>
+    </div>
+    <div class="span1"></div>
+            <?php 
+            /**
+             * ROLES
+             */
+            ?>
+            <div class="span3"> <!-- main inputs -->
+                <h2><?php echo UserModule::t('Roles'); ?></h2>
+
+            <?php 
+            $form=$this->beginWidget('CActiveForm');
+            $aChecked = Authassignment::model()->getUserRoles($model->id);
+            if (count($aChecked) == 1){
+                //kaut kads gljuks, nedrikst padot masivu ar vienu elementu
+                $aChecked = $aChecked[0];
+            }
+            $UserAdminRoles = Yii::app()->getModule('user')->UserAdminRoles;
+            $list = array();
+            foreach ($UserAdminRoles as $role_name){
+                $list[$role_name] = $role_name;
+            }
+            echo CHtml::checkBoxList(
+                    'user_role_name', 
+                    $aChecked, 
+                    $list,
+                    array ( 'labelOptions'=>array('style'=>'display: inline'))
+                    );
+             
+             
+            /**
+             * SYS companies
+             */
+            ?>                
+                <h2><?php echo UserModule::t('Sys companies'); ?></h2>
+
+            <?php 
+
+            $aUserCompanies = CcucUserCompany::model()->getUserCompnies($model->id,CcucUserCompany::CCUC_STATUS_SYS);
+            $aChecked = array();
+            foreach($aUserCompanies as $UC){
+                $aChecked[] = $UC->ccuc_ccmp_id;
+            }
+
+            if (count($aChecked) == 1){
+                //kaut kads gljuks, nedrikst padot masivu ar vienu elementu
+                $aChecked = $aChecked[0];
+            }
+
+            $list = array();
+            foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
+                $list[$mCcmp->ccucCcmp->ccmp_id] = $mCcmp->ccucCcmp->ccmp_name;
+            }            
+            
+            echo CHtml::checkBoxList(
+                    'user_sys_ccmp_id', 
+                    $aChecked, 
+                    $list,
+                    array ( 'labelOptions'=>array('style'=>'display: inline'))
+                    );
+
+    ?>
+
+    <div class="form-actions">
+        
+    <?php
+        echo CHtml::resetButton(Yii::t('d2companyModule.crud_static','Reset'), array(
+			'class' => 'btn'
+			));
+        echo ' '.CHtml::submitButton(
+                    Yii::t('d2companyModule.crud_static','Save'), 
+                    array(
+                        'class' => 'btn btn-primary',
+                        'name'=>'save_user_roles'
+                    )
+                );
+    ?>
+    </div>    
+<?php $this->endWidget(); ?>
+</div>
+</div>

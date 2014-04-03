@@ -179,16 +179,14 @@ class AdminController extends Controller
 			if($model->validate()&&$profile->validate()) {
 				$model->password=Yii::app()->controller->module->encrypting($model->password);
 				if($model->save()) {
-					$profile->user_id=$model->id;
-					$profile->save();
                     if (Yii::app()->sysCompany->getActiveCompany()){
                         
                         //create person
-                        $model_person = new Person;
-                        $model_person->first_name = $profile->first_name;
-                        $model_person->last_name = $profile->last_name;
-                        $model_person->email = $profile->email;
-                        $model_person->phone = $profile->phone;
+                        $model_person = new PprsPerson;
+                        $model_person->pprs_first_name = $profile->first_name;
+                        $model_person->pprs_second_name = $profile->last_name;
+                        //$model_person->email = $profile->email;
+                        //$model_person->phone = $profile->phone;
                         $model_person->user_id = $model->id;
                         $model_person->save();
                         
@@ -199,6 +197,9 @@ class AdminController extends Controller
                         $mCcuc->ccuc_person_id = $model_person->primaryKey;
                         $mCcuc->save();                    
                     }
+					$profile->user_id=$model->id;
+					$profile->person_id=$model_person->primaryKey;
+					$profile->save();                    
 				}
 				$this->redirect(array('view','id'=>$model->id));
 			} else $profile->validate();

@@ -131,10 +131,10 @@ class User extends CActiveRecord
 
         if (!Yii::app()->user->isGuest && Yii::app()->sysCompany->getActiveCompany()){
             $scope['is_sys_user'] = array(
-            	'join' => "INNER JOIN person p "
+            	'join' => "INNER JOIN profiles p "
                             . " ON p.user_id = user.id "
                             . "INNER JOIN ccuc_user_company "
-                            . " ON p.id = ccuc_person_id "
+                            . " ON p.person_id = ccuc_person_id "
                                 . " AND ccuc_status='" . Yii::app()->sysCompany->ccuc_status . "' "
                                 . " AND ccuc_ccmp_id = " . Yii::app()->sysCompany->getActiveCompany()
             );
@@ -192,8 +192,8 @@ class User extends CActiveRecord
         $criteria->compare('status',$this->status);
 
         if (Yii::app()->sysCompany->getActiveCompanyName()){
-            $criteria->join = " INNER JOIN person ON user.id = person.user_id ";
-            $criteria->join .= " INNER JOIN ccuc_user_company ON person.id = ccuc_person_id and ccuc_status = '".CcucUserCompany::CCUC_STATUS_SYS."' ";
+            $criteria->join = " INNER JOIN profiles ON user.id = profiles.user_id ";
+            $criteria->join .= " INNER JOIN ccuc_user_company ON profiles.person_id = ccuc_person_id and ccuc_status = '".CcucUserCompany::CCUC_STATUS_SYS."' ";
             $criteria->compare('ccuc_ccmp_id', Yii::app()->sysCompany->getActiveCompany());
         }          
         

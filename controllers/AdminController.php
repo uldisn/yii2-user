@@ -119,9 +119,19 @@ class AdminController extends Controller
             $aNewSysCcmpid = array_diff($aPostSysCcmp, $aChecked);
 
             $list = array();
-            foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
-                $list[$mCcmp->ccucCcmp->ccmp_id] = 1;
-            } 
+            if(UserModule::isAdmin()){
+                //for admin get all sys companies
+                $criteria = new CDbCriteria;
+                $criteria->compare('t.ccxg_ccgr_id', 1); //1 - syscompany
+                $model_ccxg = CcxgCompanyXGroup::model()->findAll($criteria);                
+                foreach ($model_ccxg as $mCcxg) {
+                    $list[$mCcxg->ccxg_ccmp_id] = 1;
+                }            
+            }else{            
+                foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
+                    $list[$mCcmp->ccucCcmp->ccmp_id] = 1;
+                } 
+            }
             
             foreach ($aNewSysCcmpid as $cmmp_id) {
                 // can not add no User Admin sys ccmp

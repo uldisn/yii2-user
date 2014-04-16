@@ -141,11 +141,11 @@ $this->menu=array(
     <div class="form-actions">
         
     <?php
-        echo CHtml::resetButton(Yii::t('d2companyModule.crud_static','Reset'), array(
+        echo CHtml::resetButton(Yii::t('D2companyModule.crud_static','Reset'), array(
 			'class' => 'btn'
 			));
         echo ' '.CHtml::submitButton(
-                    Yii::t('d2companyModule.crud_static','Save'), 
+                    Yii::t('D2companyModule.crud_static','Save'), 
                     array(
                         'class' => 'btn btn-primary',
                         'name'=>'save_user_roles'

@@ -119,15 +119,28 @@ $this->menu=array(
                 $aChecked[] = $UC->ccuc_ccmp_id;
             }
 
+
             if (count($aChecked) == 1){
                 //kaut kads gljuks, nedrikst padot masivu ar vienu elementu
                 $aChecked = $aChecked[0];
             }
 
             $list = array();
-            foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
-                $list[$mCcmp->ccucCcmp->ccmp_id] = $mCcmp->ccucCcmp->ccmp_name;
-            }            
+            if(UserModule::isAdmin()){
+                //for admin get all sys companies
+                $criteria = new CDbCriteria;
+                $criteria->compare('t.ccxg_ccgr_id', 1); //1 - syscompany
+                $model_ccxg = CcxgCompanyXGroup::model()->findAll($criteria);                
+                foreach ($model_ccxg as $mCcxg) {
+                    $list[$mCcxg->ccxg_ccmp_id] = $mCcxg->ccxgCcmp->ccmp_name;
+                }            
+                
+            }else{
+                //get user sys companies
+                foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
+                    $list[$mCcmp->ccucCcmp->ccmp_id] = $mCcmp->ccucCcmp->ccmp_name;
+                }            
+            }
             
             echo CHtml::checkBoxList(
                     'user_sys_ccmp_id', 

@@ -197,7 +197,7 @@ class AdminController extends Controller
                         $model_person->pprs_second_name = $profile->last_name;
                         //$model_person->email = $profile->email;
                         //$model_person->phone = $profile->phone;
-                        $model_person->user_id = $model->id;
+                        //$model_person->user_id = $model->id;
                         $model_person->save();
                         
                         //create ccuc (company <==> person)

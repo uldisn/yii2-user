@@ -43,12 +43,22 @@ class AdminController extends Controller
 	public function actionAdmin()
 	{
         $this->layout='';
+        
+        $view = 'index';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }          
+        
 		$model=new User('search');
         $model->unsetAttributes();  // clear any default values
         if(isset($_GET['User']))
             $model->attributes=$_GET['User'];
 
-        $this->render('index',array(
+        $this->render($view,array(
             'model'=>$model,
         ));
 
@@ -247,7 +257,16 @@ class AdminController extends Controller
 			} else $profile->validate();
 		}
 
-		$this->render('update',array(
+        $view = 'update';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }                  
+        
+		$this->render($view,array(
 			'model'=>$model,
 			'profile'=>$profile,
 		));

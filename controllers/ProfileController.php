@@ -47,7 +47,18 @@ class ProfileController extends Controller
 	 */
 	public function actionProfile()
 	{
+        $view = 'profile';       
+        
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.profile.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }
+        
 		$model = $this->loadUser();
+        
         if (DbrUser::isCustomerOfficeUser()) {
             $this->contentHeader = UserModule::t('Your profile');
             $this->layout='//layouts/ace';
@@ -56,7 +67,7 @@ class ProfileController extends Controller
                 'profile' => $model->profile,
             ));
         } else {
-            $this->render('profile', array(
+            $this->render($view, array(
                 'model' => $model,
                 'profile' => $model->profile,
             ));
@@ -125,6 +136,15 @@ class ProfileController extends Controller
 					}
 			}
             
+            $view = 'changepassword';       
+            if(Yii::app()->getModule('user')->view){
+                $alt_view = Yii::app()->getModule('user')->view . '.profile.'.$view;
+                if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                    $view = $alt_view;
+                    $this->layout=Yii::app()->getModule('user')->layout;
+                }
+            }            
+            
             if (DbrUser::isCustomerOfficeUser()) {
                 $this->contentHeader = UserModule::t('Change password');
                 $this->layout='//layouts/ace';
@@ -132,7 +152,7 @@ class ProfileController extends Controller
                     'model' => $model,
                 ));
             } else {
-                $this->render('changepassword', array(
+                $this->render($view, array(
                     'model' => $model,
                 ));
             }            

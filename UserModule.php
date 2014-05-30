@@ -118,6 +118,10 @@ class UserModule extends CWebModule
 	public $tableUsers = '{{users}}';
 	public $tableProfiles = '{{profiles}}';
 	public $tableProfileFields = '{{profiles_fields}}';
+	
+    public $view = false;
+    public $layouts = '//layouts/column2';
+    
 
     public $defaultScope = array(
             'with'=>array('profile'),

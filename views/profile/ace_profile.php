@@ -15,14 +15,28 @@
             array(
                 'data' => $model,
                 'attributes' => array(
-                array(
-                    'name' => 'username',
-                    'type' => 'raw',
-                ),
+                    array(
+                        'name' => 'username',
+                        'type' => 'raw',
+                    ),
+                    array(
+                        'name' => 'create_at',
+                        'type' => 'raw',
+                    ),
+                    array(
+                        'name' => 'lastvisit_at',
+                        'type' => 'raw',
+                    ),
+                    array(
+                        'name' => 'status',
+                        'value' => CHtml::encode(User::itemAlias("UserStatus",$model->status)),
+                        
+                    ),
+                    
 
-    )
-        )
-);
+                )
+            )
+        );
 ?>
       
         

@@ -6,7 +6,7 @@ class AdminController extends Controller
 	public $layout='//layouts/column2';
 	
 	private $_model;
-
+    public $menu_route = "user/admin";  
 	/**
 	 * @return array action filters
 	 */
@@ -174,8 +174,17 @@ class AdminController extends Controller
             }
         }
         
+        $view = 'view';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }           
+        
 		$model = $this->loadModel();
-		$this->render('view',array(
+		$this->render($view,array(
 			'model'=>$model,
 		));
 	}
@@ -225,7 +234,16 @@ class AdminController extends Controller
 			} else $profile->validate();
 		}
 
-		$this->render('create',array(
+        $view = 'create';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }         
+        
+		$this->render($view,array(
 			'model'=>$model,
 			'profile'=>$profile,
 		));

@@ -74,7 +74,7 @@ class AdminController extends Controller
         $model = $this->loadModel();
         
         //update record
-        if (isset($_POST['save_user_roles'])) {
+        if (isset($_POST['user_role_name']) || isset($_POST['user_sys_ccmp_id'])) {
 
             //cheked roles
             $aChecked = Authassignment::model()->getUserRoles($model->id);            

@@ -241,4 +241,9 @@ class User extends CActiveRecord
         ));
     }
 
+    public function init(){
+        $this->status = self::STATUS_ACTIVE;
+    }
+
+    
 }

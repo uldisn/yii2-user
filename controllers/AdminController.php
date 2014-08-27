@@ -214,17 +214,11 @@ class AdminController extends Controller
                         $model_person = new PprsPerson;
                         $model_person->pprs_first_name = $profile->first_name;
                         $model_person->pprs_second_name = $profile->last_name;
-                        //$model_person->email = $profile->email;
-                        //$model_person->phone = $profile->phone;
-                        //$model_person->user_id = $model->id;
+                        $model_person->pprs_ccmp_id = Yii::app()->sysCompany->getActiveCompany();
+
                         $model_person->save();
                         
-                        //create ccuc (company <==> person)
-                        $mCcuc = new CcucUserCompany;
-                        $mCcuc->ccuc_ccmp_id = Yii::app()->sysCompany->getActiveCompany();
-                        $mCcuc->ccuc_status = Yii::app()->sysCompany->ccuc_status;
-                        $mCcuc->ccuc_person_id = $model_person->primaryKey;
-                        $mCcuc->save();                    
+
                     }
 					$profile->user_id=$model->id;
 					$profile->person_id=$model_person->primaryKey;

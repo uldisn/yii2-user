@@ -48,7 +48,7 @@ class User extends CActiveRecord
 	{
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.CConsoleApplication
-		return ((get_class(Yii::app())=='CConsoleApplication' || (get_class(Yii::app())!='CConsoleApplication' && Yii::app()->user->checkAccess('Administrator')))?array(
+		return ((get_class(Yii::app())=='CConsoleApplication' || (get_class(Yii::app())!='CConsoleApplication' && Yii::app()->user->checkAccess('UserAdmin')))?array(
 			array('username', 'length', 'max'=>128, 'min' => 3,'message' => UserModule::t("Incorrect username (minimal length 3 characters).")),
 			array('password', 'length', 'max'=>128, 'min' => 4,'message' => UserModule::t("Incorrect password (minimal length 4 symbols).")),
 			array('email', 'email'),

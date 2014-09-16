@@ -24,12 +24,13 @@ class AdminController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','create','update','view'),
+			array('allow', // allow admin user to view other users
+				//'actions'=>array('admin','delete','create','update','view'),
+                'actions'=>array('admin','view'),
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin
-				'actions'=>array('admin','create','update','view'),
+				'actions'=>array('admin','delete','create','update','view'),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
 			array('deny',  // deny all users
@@ -74,7 +75,9 @@ class AdminController extends Controller
         $model = $this->loadModel();
         
         //update record
-        if (isset($_POST['user_role_name']) || isset($_POST['user_sys_ccmp_id'])) {
+        if (Yii::app()->user->checkAccess("UserAdmin")
+            && (isset($_POST['user_role_name']) || isset($_POST['user_sys_ccmp_id']))
+        ) {
 
             //cheked roles
             $aChecked = Authassignment::model()->getUserRoles($model->id);            

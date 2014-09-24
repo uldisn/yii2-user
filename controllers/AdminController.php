@@ -142,7 +142,7 @@ class AdminController extends Controller
                 }            
             }else{            
                 foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
-                    $list[$mCcmp->ccucCcmp->ccmp_id] = 1;
+                    $list[$mCcmp['ccmp_id']] = 1;
                 } 
             }
             

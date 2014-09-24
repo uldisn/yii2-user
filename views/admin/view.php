@@ -138,7 +138,7 @@ $this->menu=array(
             }else{
                 //get user sys companies
                 foreach (Yii::app()->sysCompany->getClientCompanies() as $mCcmp) {
-                    $list[$mCcmp->ccucCcmp->ccmp_id] = $mCcmp->ccucCcmp->ccmp_name;
+                    $list[$mCcmp['ccmp_id']] = $mCcmp['ccmp_name'];
                 }            
             }
             

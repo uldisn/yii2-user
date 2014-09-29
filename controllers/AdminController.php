@@ -30,7 +30,7 @@ class AdminController extends Controller
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin
-				'actions'=>array('admin','delete','create','update','view'),
+				'actions'=>array('admin','delete','create','update','view','genCodeCard'),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
 			array('deny',  // deny all users
@@ -312,6 +312,72 @@ class AdminController extends Controller
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
 	}
+    
+    public function actionGenCodeCard($request_type)
+    {
+        
+        // Validate settings
+        if (!Yii::app()->user->checkAccess("UserAdmin")) {
+            $this->redirect(array('view','id'=>$model->id));
+        }
+        
+        $code_card = Yii::app()->getModule('user')->codeCard;
+        
+        if (empty($code_card['host']) || empty($code_card['apy_key']) || empty($code_card['crypt_key'])) {
+            $this->redirect(array('view','id'=>$model->id));
+        }
+        
+		$model   = $this->loadModel();
+        $profile = $model->profile;
+        
+        $error = '';
+        
+        if ($request_type == 'validate_code') {
+            $add_data   = $_POST['code'];
+            $session_id = $_POST['session_id'];
+        } else {
+            $add_data   = $model->id;
+            $session_id = '';
+        }
+        
+        $request = array(
+            'request_type' => $request_type,
+            'user_id'      => Yii::app()->user->getId(),
+            'add_data'     => $add_data,
+            'session_id'   => $session_id
+        );
+        
+        $reply = array (
+            'error' => ''
+        );
+        
+        CodeCard::request($request, $reply);
+        
+        if ($reply['error']) {
+            $error = UserModule::t($reply['error']);
+        } elseif ($reply['reply_type'] == 'code_card') {
+            $profile->setAttribute('code_card_expire_date', $reply['add_data']['expire_date']);
+            $profile->save();
+        }
+        
+        $view = 'codeCard';
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }
+        
+		$this->render($view,
+            array(
+                'model' => $model,
+                'reply' => $reply,
+                'error' => $error,
+            )
+        );
+        
+    }
 	
 	/**
      * Performs the AJAX validation.

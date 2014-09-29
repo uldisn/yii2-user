@@ -157,6 +157,16 @@ class UserModule extends CWebModule
 	 * @desc Behaviors for models
 	 */
 	public $componentBehaviors=array();
+    
+    /**
+     * Code card settings. Not active by default
+     */
+    public $codeCard = array(
+        'require'    => false,
+        'host'       => '',
+        'apy_key'    => '',
+        'crypt_key'  => '',
+    );
 	
 	public function init()
 	{

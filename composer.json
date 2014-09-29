@@ -9,5 +9,8 @@
             "name": "Mikhail Mangushev",
             "email": "development@2mx.org"
         }
-    ]
+    ],
+    "require": {
+        "phpseclib/phpseclib": "dev-master"
+    }
 }

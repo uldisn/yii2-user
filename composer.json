@@ -11,6 +11,6 @@
         }
     ],
     "require": {
-        "phpseclib/phpseclib": "dev-master"
+        "phpseclib/phpseclib": "0.3.*"
     }
 }

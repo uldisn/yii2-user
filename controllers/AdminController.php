@@ -333,6 +333,9 @@ class AdminController extends Controller
         $error = '';
         
         if ($request_type == 'validate_code') {
+            if (empty($_POST['code']) || empty($_POST['session_id'])) {
+                $this->redirect(array('view','id'=>$model->id));
+            }
             $add_data   = $_POST['code'];
             $session_id = $_POST['session_id'];
         } else {

@@ -39,13 +39,17 @@ class LoginController extends Controller
     public function actionEnterCode()
     {
         
-        if (!Yii::app()->user->id) {
+        if (Yii::app()->user->isGuest) {
             $this->redirect(array('/user/login'));
         }
         
         $code_card = Yii::app()->getModule('user')->codeCard;
         
         if (empty($code_card['require'])) {
+            $this->_finishLogin();
+        }
+        
+        if (Yii::app()->user->hasState('valid_login_code_is_set')) {
             $this->_finishLogin();
         }
         

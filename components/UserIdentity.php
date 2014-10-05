@@ -8,42 +8,45 @@
 class UserIdentity extends CUserIdentity
 {
 	private $_id;
-	const ERROR_EMAIL_INVALID=3;
-	const ERROR_STATUS_NOTACTIV=4;
-	const ERROR_STATUS_BAN=5;
+	const ERROR_EMAIL_INVALID   = 3;
+	const ERROR_STATUS_NOTACTIV = 4;
+	const ERROR_STATUS_BAN      = 5;
+    
+    const LOGIN_TOKEN = 'logintoken';
+    
 	/**
 	 * Authenticates a user.
-	 * The example implementation makes sure if the username and password
-	 * are both 'demo'.
-	 * In practical applications, this should be changed to authenticate
-	 * against some persistent user identity storage (e.g. database).
+     * 
 	 * @return boolean whether authentication succeeds.
 	 */
 	public function authenticate()
 	{
-		if (strpos($this->username,"@")) {
-			$user=User::model()->notsafe()->findByAttributes(array('email'=>$this->username));
-		} else {
-			$user=User::model()->notsafe()->findByAttributes(array('username'=>$this->username));
+        
+        $user=User::model()->notsafe()->findByAttributes(array('username' => $this->username));
+        
+		if ($user === null) {
+            $this->errorCode = self::ERROR_USERNAME_INVALID;
+        } elseif (Yii::app()->getModule('user')->encrypting($this->password) !== $user->password) {
+			$this->errorCode = self::ERROR_PASSWORD_INVALID;
+        } elseif ($user->status == 0 && Yii::app()->getModule('user')->loginNotActiv == false) {
+			$this->errorCode = self::ERROR_STATUS_NOTACTIV;
+        } elseif ($user->status == -1) {
+			$this->errorCode = self::ERROR_STATUS_BAN;
+        } else {
+			$this->_id       = $user->id;
+			$this->username  = $user->username;
+			$this->errorCode = self::ERROR_NONE;
 		}
-		if($user===null)
-			if (strpos($this->username,"@")) {
-				$this->errorCode=self::ERROR_EMAIL_INVALID;
-			} else {
-				$this->errorCode=self::ERROR_USERNAME_INVALID;
-			}
-		else if(Yii::app()->getModule('user')->encrypting($this->password)!==$user->password)
-			$this->errorCode=self::ERROR_PASSWORD_INVALID;
-		else if($user->status==0&&Yii::app()->getModule('user')->loginNotActiv==false)
-			$this->errorCode=self::ERROR_STATUS_NOTACTIV;
-		else if($user->status==-1)
-			$this->errorCode=self::ERROR_STATUS_BAN;
-		else {
-			$this->_id=$user->id;
-			$this->username=$user->username;
-			$this->errorCode=self::ERROR_NONE;
-		}
-		return !$this->errorCode;
+        
+        // Generate a login token and save it in the DB
+        $user->logintoken = sha1(uniqid(mt_rand(), true));
+        $user->save();
+        
+        //the login token is saved as a state
+        $this->setState(self::LOGIN_TOKEN, $user->logintoken);
+        
+        return $this->errorCode==self::ERROR_NONE;
+        
 	}
     
     /**

@@ -38,14 +38,28 @@ class UserIdentity extends CUserIdentity
 			$this->errorCode = self::ERROR_NONE;
 		}
         
-        // Generate a login token and save it in the DB
-        $user->logintoken = sha1(uniqid(mt_rand(), true));
-        $user->save();
+        if ($this->errorCode == self::ERROR_NONE) {
+            
+            // Generate a login token and save it in the DB
+            $user->logintoken = sha1(uniqid(mt_rand(), true));
+            $user->save();
+            
+            // the login token is saved as a state
+            $this->setState(self::LOGIN_TOKEN, $user->logintoken);
+            
+            // add IP to state
+            $ip = empty($_SERVER['REMOTE_ADDR']) ? '' : $_SERVER['REMOTE_ADDR'];
+            $this->setState('user_ip', $ip);
+            
+            // add UA to state
+            $ua = empty($_SERVER['HTTP_USER_AGENT']) ? '' : $_SERVER['HTTP_USER_AGENT'];
+            $this->setState('user_ua', $ua);
+            
+            return true;
+            
+        }
         
-        //the login token is saved as a state
-        $this->setState(self::LOGIN_TOKEN, $user->logintoken);
-        
-        return $this->errorCode==self::ERROR_NONE;
+        return false;
         
 	}
     

@@ -76,7 +76,11 @@ class AdminController extends Controller
         
         //update record
         if (Yii::app()->user->checkAccess("UserAdmin")
-            && (isset($_POST['user_role_name']) || isset($_POST['user_sys_ccmp_id']))
+            && (
+                isset($_POST['user_role_name']) ||
+                isset($_POST['user_sys_ccmp_id']) ||
+                isset($_POST['ip_tables'])
+            )
         ) {
 
             //cheked roles
@@ -157,7 +161,7 @@ class AdminController extends Controller
                 $mCcuc->ccuc_ccmp_id = $cmmp_id;
                 $mCcuc->ccuc_status = CcucUserCompany::CCUC_STATUS_SYS;
                 $mCcuc->ccuc_person_id = $model->profile->person_id;
-                $mCcuc->save();    
+                //$mCcuc->save();    
                 if (!$mCcuc->save()) {
                     print_r($mCcuc->errors);
                     exit;
@@ -175,6 +179,24 @@ class AdminController extends Controller
                     )
                 );            
             }
+            
+            UxipUserXIpTable::model()->deleteAll(
+                "`uxip_user_id` = :uxip_user_id ",
+                [':uxip_user_id' => $model->id]
+            );
+            if (!empty($_POST['ip_tables'])) {
+                foreach($_POST['ip_tables'] as $ip) {
+                    $Iptb = new UxipUserXIpTable;
+                    $Iptb->uxip_user_id = $model->id;
+                    $Iptb->uxip_iptb_id = $ip;
+
+                    if (!$Iptb->save()) {
+                        print_r($Iptb->errors);
+                        exit;
+                    }
+                }
+            }
+            
         }
         
         $view = 'view';       

@@ -51,5 +51,18 @@ class UxipUserXIpTable extends BaseUxipUserXIpTable
             'criteria' => $this->searchCriteria($criteria),
         ));
     }
+    
+    public function getUserIpTables($user_id) {
+        
+        $this->uxip_user_id = $user_id;
+        $ip_list = $this->search()->getData();
+        $aUserIpTable = array();
+        foreach($ip_list as $ip) {
+            $aUserIpTable[] = $ip->uxip_iptb_id;
+        }        
+        
+        return $aUserIpTable;
+
+    }
 
 }

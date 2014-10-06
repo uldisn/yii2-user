@@ -61,7 +61,7 @@
                         </div>
                         <div class='controls'>
                             <span class="tooltip-wrapper" data-toggle='tooltip' data-placement="right"
-                                 title='<?php echo (($t = UserModule::t('IP from')) != 'tooltip.iptb_from')?$t:'' ?>'>
+                                 title='<?php echo (($t = UserModule::t('IP From')) != 'tooltip.iptb_from')?$t:'' ?>'>
                                 <?php
                             echo $form->textField($model, 'iptb_from', array('size' => 15, 'maxlength' => 15));
                             echo $form->error($model,'iptb_from')
@@ -77,7 +77,7 @@
                         </div>
                         <div class='controls'>
                             <span class="tooltip-wrapper" data-toggle='tooltip' data-placement="right"
-                                 title='<?php echo (($t = UserModule::t('IP to')) != 'tooltip.iptb_to')?$t:'' ?>'>
+                                 title='<?php echo (($t = UserModule::t('IP To')) != 'tooltip.iptb_to')?$t:'' ?>'>
                                 <?php
                             echo $form->textField($model, 'iptb_to', array('size' => 15, 'maxlength' => 15));
                             echo $form->error($model,'iptb_to')
@@ -93,7 +93,7 @@
                         </div>
                         <div class='controls'>
                             <span class="tooltip-wrapper" data-toggle='tooltip' data-placement="right"
-                                 title='<?php echo (($t = UserModule::t('IP status')) != 'tooltip.iptb_status')?$t:'' ?>'>
+                                 title='<?php echo (($t = UserModule::t('IP Status')) != 'tooltip.iptb_status')?$t:'' ?>'>
                                 <?php
                             echo CHtml::activeDropDownList($model, 'iptb_status', $model->getEnumFieldLabels('iptb_status'));
                             echo $form->error($model,'iptb_status')

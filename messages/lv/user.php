@@ -151,8 +151,8 @@ return array(
     'User not exist or Card expired' => 'Lietotājs neeksistē vai kartei beidzies termiņš',
     'Invalid code' => 'Nederīgs kods',
     'Wrong code' => 'Nepareizs kods',
-    'From' => 'No',
-    'To' => 'Līdz',
+    'IP From' => 'IP No',
+    'IP To' => 'IP Līdz',
     'Name' => 'Nosaukums',
     'Your IP is not in allowed list.' => 'Tava IP adrese nav atļauto sarakstā.',
 );

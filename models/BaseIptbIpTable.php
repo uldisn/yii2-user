@@ -40,6 +40,7 @@ abstract class BaseIptbIpTable extends CActiveRecord
                 array('iptb_name, iptb_from, iptb_to, iptb_status', 'required'),
                 array('iptb_name', 'length', 'max' => 255),
                 array('iptb_from, iptb_to', 'length', 'max' => 15),
+                array('iptb_from, iptb_to', 'is_valid_ip'),
                 array('iptb_status', 'length', 'max' => 8),
                 array('iptb_id, iptb_name, iptb_from, iptb_to, iptb_status', 'safe', 'on' => 'search'),
             )
@@ -76,8 +77,8 @@ abstract class BaseIptbIpTable extends CActiveRecord
         return array(
             'iptb_id' => UserModule::t('Id'),
             'iptb_name' => UserModule::t('Name'),
-            'iptb_from' => UserModule::t('From'),
-            'iptb_to' => UserModule::t('To'),
+            'iptb_from' => UserModule::t('IP From'),
+            'iptb_to' => UserModule::t('IP To'),
             'iptb_status' => UserModule::t('Status'),
         );
     }
@@ -137,6 +138,17 @@ abstract class BaseIptbIpTable extends CActiveRecord
 
         return $criteria;
 
+    }
+    
+    public function is_valid_ip($attribute)
+    {
+        
+        $pattern = '#^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$#';
+        
+        if (!preg_match($pattern, $this->$attribute)) {
+            $this->addError($attribute, UserModule::t('Enter a valid IP address'));
+        }
+        
     }
 
 }

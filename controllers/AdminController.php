@@ -180,21 +180,28 @@ class AdminController extends Controller
                 );            
             }
             
-            UxipUserXIpTable::model()->deleteAll(
-                "`uxip_user_id` = :uxip_user_id ",
-                [':uxip_user_id' => $model->id]
-            );
-            if (!empty($_POST['ip_tables'])) {
-                foreach($_POST['ip_tables'] as $ip) {
-                    $Iptb = new UxipUserXIpTable;
-                    $Iptb->uxip_user_id = $model->id;
-                    $Iptb->uxip_iptb_id = $ip;
+            $security_policy = Yii::app()->getModule('user')->SecurityPolicy;
+            
+            if ($security_policy['useIpTables']) {
+                
+                UxipUserXIpTable::model()->deleteAll(
+                    "`uxip_user_id` = :uxip_user_id ",
+                    [':uxip_user_id' => $model->id]
+                );
+                
+                if (!empty($_POST['ip_tables'])) {
+                    foreach($_POST['ip_tables'] as $ip) {
+                        $Iptb = new UxipUserXIpTable;
+                        $Iptb->uxip_user_id = $model->id;
+                        $Iptb->uxip_iptb_id = $ip;
 
-                    if (!$Iptb->save()) {
-                        print_r($Iptb->errors);
-                        exit;
+                        if (!$Iptb->save()) {
+                            print_r($Iptb->errors);
+                            exit;
+                        }
                     }
                 }
+                
             }
             
         }

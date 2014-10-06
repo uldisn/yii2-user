@@ -71,6 +71,9 @@ class UserLogin extends CFormModel
 				case UserIdentity::ERROR_PASSWORD_INVALID:
 					$this->addError("password",UserModule::t("Password is incorrect."));
 					break;
+				case UserIdentity::ERROR_STATUS_IP_DENIED:
+					$this->addError("status",UserModule::t("Your IP is not in allowed list."));
+					break;
 			}
 		}
 	}

@@ -167,6 +167,22 @@ class UserModule extends CWebModule
         'apy_key'    => '',
         'crypt_key'  => '',
     );
+    
+    /**
+     * Default Security Policy settings
+     * - Allow guest access (if allowed by rules)
+     * - Don't logout if IP changed during session
+     * - Don't logout if User Agent changed during session
+     * - Don't disable multiple sessions for the same user
+     * - Don't check User access in uxip_user_x_ip_table
+     */
+    public $SecurityPolicy = array(
+        'denyGuest'        => false,
+        'denyIpChanges'    => false,
+        'denyUaChanges'    => false,
+        'denyMultiSession' => false,
+        'useIpTables'      => false,
+    );
 	
 	public function init()
 	{

@@ -154,5 +154,6 @@ return array(
     'From' => 'No',
     'To' => 'Līdz',
     'Name' => 'Nosaukums',
+    'Your IP is not in allowed list.' => 'Tava IP adrese nav atļauto sarakstā.',
 );
 

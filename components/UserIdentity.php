@@ -8,9 +8,10 @@
 class UserIdentity extends CUserIdentity
 {
 	private $_id;
-	const ERROR_EMAIL_INVALID   = 3;
-	const ERROR_STATUS_NOTACTIV = 4;
-	const ERROR_STATUS_BAN      = 5;
+	const ERROR_EMAIL_INVALID    = 3;
+	const ERROR_STATUS_NOTACTIV  = 4;
+	const ERROR_STATUS_BAN       = 5;
+    const ERROR_STATUS_IP_DENIED = 6;
     
     const LOGIN_TOKEN = 'logintoken';
     
@@ -22,6 +23,8 @@ class UserIdentity extends CUserIdentity
 	public function authenticate()
 	{
         
+        $security_policy = Yii::app()->getModule('user')->SecurityPolicy;
+        
         $user=User::model()->notsafe()->findByAttributes(array('username' => $this->username));
         
 		if ($user === null) {
@@ -32,6 +35,8 @@ class UserIdentity extends CUserIdentity
 			$this->errorCode = self::ERROR_STATUS_NOTACTIV;
         } elseif ($user->status == -1) {
 			$this->errorCode = self::ERROR_STATUS_BAN;
+        } elseif ($security_policy['useIpTables'] && !IpTables::validate($user->id)) {
+			$this->errorCode = self::ERROR_STATUS_IP_DENIED;
         } else {
 			$this->_id       = $user->id;
 			$this->username  = $user->username;

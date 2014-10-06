@@ -68,6 +68,7 @@ return array(
 	'No, but show on registration form' => 'Nē, bet parādiet reģistrācijas formu',
 	'Not active' => 'Nav aktīvs',
 	'Active' => 'Aktīvs',
+    'Inactive' => 'Nektīvs',
 	'Banned' => 'Bloķēts',
 	'Please fill out the following form with your login credentials:' => 'Lūdzu aizpildiet sekojošu formu ar lietotājvārdu un paroli:',
 	'Fields with <span class="required">*</span> are required.' => '<span class="required">*</span> Obligati aizpildāmi ievadlauki.',
@@ -150,5 +151,8 @@ return array(
     'User not exist or Card expired' => 'Lietotājs neeksistē vai kartei beidzies termiņš',
     'Invalid code' => 'Nederīgs kods',
     'Wrong code' => 'Nepareizs kods',
+    'From' => 'No',
+    'To' => 'Līdz',
+    'Name' => 'Nosaukums',
 );
 

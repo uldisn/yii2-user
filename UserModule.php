@@ -175,6 +175,7 @@ class UserModule extends CWebModule
      * - Don't logout if User Agent changed during session
      * - Don't disable multiple sessions for the same user
      * - Don't check User access in uxip_user_x_ip_table
+     * - Don't set denyGuestExcept it's used only with denyGuest = true
      */
     public $SecurityPolicy = array(
         'denyGuest'        => false,
@@ -182,6 +183,7 @@ class UserModule extends CWebModule
         'denyUaChanges'    => false,
         'denyMultiSession' => false,
         'useIpTables'      => false,
+        'denyGuestExcept'  => array(),
     );
 	
 	public function init()

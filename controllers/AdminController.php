@@ -85,39 +85,42 @@ class AdminController extends Controller
 
             //cheked roles
             $aChecked = Authassignment::model()->getUserRoles($model->id);            
+            $admin_role = Yii::app()->getModule('rights')->superuserName;
             
-            //get in form checked
-            $aPostRole = array();
-            if (isset($_POST['user_role_name'])) {
-                foreach ($_POST['user_role_name'] as $nRoleId) {
-                    $aPostRole[] = $nRoleId;
+            //for administrator can not save changes of roles
+            if(!in_array($admin_role, $aChecked)){            
+                //get in form checked
+                $aPostRole = array();
+                if (isset($_POST['user_role_name'])) {
+                    foreach ($_POST['user_role_name'] as $nRoleId) {
+                        $aPostRole[] = $nRoleId;
+                    }
+                }
+                $aDelRole = array_diff($aChecked, $aPostRole);
+                $aNewRole = array_diff($aPostRole, $aChecked);
+
+                $UserAdminRoles = Yii::app()->getModule('user')->UserAdminRoles;
+                foreach ($aNewRole as $sRoleName) {
+                    // can not add no User Admin roles defined in main config
+                    if(!in_array($sRoleName,$UserAdminRoles)){
+                        continue;
+                    }
+                    $aa_model = new Authassignment;
+                    $aa_model->itemname = $sRoleName;
+                    $aa_model->userid = $model->id;
+                    if (!$aa_model->save()) {
+                        print_r($aa_model->errors);
+                        exit;
+                    }
+                }
+
+                if(!empty($aDelRole)){
+                    Authassignment::model()->deleteAll(
+                        "`userid` = :userid AND itemname in('".implode("','",$aDelRole)."')",
+                    array(':userid' => $model->id)
+                    );            
                 }
             }
-            $aDelRole = array_diff($aChecked, $aPostRole);
-            $aNewRole = array_diff($aPostRole, $aChecked);
-
-            $UserAdminRoles = Yii::app()->getModule('user')->UserAdminRoles;
-            foreach ($aNewRole as $sRoleName) {
-                // can not add no User Admin roles defined in main config
-                if(!in_array($sRoleName,$UserAdminRoles)){
-                    continue;
-                }
-                $aa_model = new Authassignment;
-                $aa_model->itemname = $sRoleName;
-                $aa_model->userid = $model->id;
-                if (!$aa_model->save()) {
-                    print_r($aa_model->errors);
-                    exit;
-                }
-            }
-
-            if(!empty($aDelRole)){
-                Authassignment::model()->deleteAll(
-                    "`userid` = :userid AND itemname in('".implode("','",$aDelRole)."')",
-                array(':userid' => $model->id)
-                );            
-            }
-
             //checked companies
             $aUserCompanies = CcucUserCompany::model()->getUserCompnies($model->id,CcucUserCompany::CCUC_STATUS_SYS);
             $aChecked = array();

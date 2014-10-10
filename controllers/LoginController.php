@@ -117,10 +117,25 @@ class LoginController extends Controller
         
         $this->lastViset();
         
+        $this->_setLanguage();
+        
         if (Yii::app()->getBaseUrl() . "/index.php" === Yii::app()->user->returnUrl) {
             $this->redirect(Yii::app()->controller->module->returnUrl);
         } else {
             $this->redirect(Yii::app()->user->returnUrl);
+        }
+        
+    }
+    
+    private function _setLanguage()
+    {
+        
+        $model = User::model()->notsafe()->findByPk(Yii::app()->user->id);
+        
+        $userLang = $model->profile->getAttribute('lang');
+        
+        if ($userLang) {
+            Yii::app()->language = $userLang;
         }
         
     }

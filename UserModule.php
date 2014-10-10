@@ -158,6 +158,8 @@ class UserModule extends CWebModule
 	 */
 	public $componentBehaviors=array();
     
+    public $options = array();
+    
     /**
      * Code card settings. Not active by default
      */

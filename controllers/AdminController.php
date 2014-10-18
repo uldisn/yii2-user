@@ -366,7 +366,7 @@ class AdminController extends Controller
         
         if ($request_type == 'validate_code') {
             if (empty($_POST['code']) || empty($_POST['session_id'])) {
-                $this->redirect(array('view','id'=>$model->id));
+                $this->redirect(array('view', 'id'=>$model->id));
             }
             $add_data   = $_POST['code'];
             $session_id = $_POST['session_id'];
@@ -391,13 +391,66 @@ class AdminController extends Controller
         if ($reply['error']) {
             $error = UserModule::t($reply['error']);
         } elseif ($reply['reply_type'] == 'code_card') {
-            $profile->setAttribute('code_card_expire_date', $reply['add_data']['expire_date']);
+            
+            // Savec codeCard expire date
+            $profile->setAttribute(
+                'code_card_expire_date',
+                $reply['add_data']['expire_date']
+            );
             $profile->save();
+            
+            // Save codeCard as PDF
+            $pdf = new TCPDF('L', PDF_UNIT, 'BUSINESS_CARD_ES', true, 'UTF-8', false);
+            
+            //Basic setup
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+            
+            // set default monospaced font
+            $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+
+            // set margins
+            $pdf->SetMargins(0, 2, 4, true);
+            $pdf->SetHeaderMargin(0);
+            $pdf->SetFooterMargin(0);
+            
+            // set font
+            $pdf->SetFont('helvetica', '', 8);
+            
+            $pdf->setCellHeightRatio(1.1);
+            
+            // add a page
+            $pdf->AddPage();
+            
+            $html = $this->renderPartial(
+                'codeCard',
+                array('reply' => $reply),
+                true
+            );
+            
+            //echo $html;
+            //exit;
+            
+            // output the HTML content
+            $pdf->writeHTML($html, false);
+            
+            // reset pointer to the last page
+            $pdf->lastPage();
+            
+            $pdf->Output('CodeCard.pdf', 'D');
+            
+            exit;
+            
         }
         
-        $view = 'codeCard';
-        if(Yii::app()->getModule('user')->view){
-            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+        if ($reply['reply_type'] == 'validate_code') {
+            $view = 'validate_code';
+        } else {
+            $view = 'codeCard_empty';
+        }
+        
+        if (Yii::app()->getModule('user')->view) {
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.' . $view;
             if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
                 $view = $alt_view;
                 $this->layout=Yii::app()->getModule('user')->layout;

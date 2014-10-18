@@ -52,6 +52,11 @@ class Authassignment extends BaseAuthassignment
         ));
     }
     
+    /**
+     * get all user roles
+     * @param int $user_id (no pprs_id)
+     * @return array('role1','role2')
+     */
     public function getUserRoles($user_id){
             $this->userid = $user_id;
             $asigned_roles = $this->search()->getData();
@@ -59,8 +64,39 @@ class Authassignment extends BaseAuthassignment
             foreach($asigned_roles  as $modelAsignedRole){
                 $aUserRoles[] = $modelAsignedRole->itemname;
             }        
-            
             return $aUserRoles;
+    }
+
+    /**
+     * get all role users
+     * @param int $user_id (no pprs_id)
+     * @return array(1,3) //pprs_id list
+     */
+    static public function getRoleUsers($role){
+        
+        $sql = "  
+                SELECT DISTINCT 
+                  p.person_id 
+                FROM
+                  authassignment aa 
+                  INNER JOIN users u 
+                    ON aa.userid = u.id 
+                  INNER JOIN `profiles` p 
+                    ON u.id = p.user_id 
+                WHERE itemname = :role 
+                  AND `status` = :status -- User::STATUS_ACTIVE              
+                ";
+        $rawData = Yii::app()->db->createCommand($sql);
+        $rawData->bindParam(":role", $role, PDO::PARAM_STR);                
+        $status = User::STATUS_ACTIVE;
+        $rawData->bindParam(":status", $status, PDO::PARAM_INT);      
+        $data = $rawData->queryAll();
+        
+        $pprs = array();
+        foreach($data  as $row){
+            $pprs[] = $row['person_id'];
+        }        
+        return $pprs;
     }
 
 }

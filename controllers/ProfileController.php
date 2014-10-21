@@ -45,8 +45,20 @@ class ProfileController extends Controller
 	/**
 	 * Shows a particular model.
 	 */
-	public function actionProfile()
+	public function actionProfile($ajax = false)
 	{
+
+        if($ajax !== false 
+                && $ajax == 'ppcn-person-contact-grid'
+                && Yii::app()->hasModule('d2person')
+        ){
+            $view = Yii::app()->getModule('user')->view . '.profile._view_contacts';
+            $this->renderPartial($view);
+            return;
+        }
+
+        $model = $this->loadUser();        
+        
         $view = 'profile';       
         
         if(Yii::app()->getModule('user')->view){
@@ -56,8 +68,6 @@ class ProfileController extends Controller
                 $this->layout=Yii::app()->getModule('user')->layout;
             }
         }
-        
-		$model = $this->loadUser();
         
         if (DbrUser::isCustomerOfficeUser()) {
             $this->contentHeader = UserModule::t('Your profile');

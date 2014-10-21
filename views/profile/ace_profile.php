@@ -11,7 +11,7 @@
         
 <?php 
         $this->widget(
-            'TbDetailView', 
+            'TbAceDetailView', 
             array(
                 'data' => $model,
                 'attributes' => array(

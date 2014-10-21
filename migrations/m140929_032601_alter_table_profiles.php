@@ -11,6 +11,7 @@ class m140929_032601_alter_table_profiles extends CDbMigration
 
 		$this->execute("
             ALTER TABLE `profiles` ADD `code_card_expire_date` DATE NULL;
+            INSERT INTO `profiles_fields` (`varname`, `title`, `field_type`, `position`, `visible`) VALUES ('code_card_expire_date', 'Code card expire date', 'DATE', '11', '3'); 
         ");
         
 	}
@@ -23,6 +24,7 @@ class m140929_032601_alter_table_profiles extends CDbMigration
         
 		$this->execute("
             ALTER TABLE `profiles` DROP `code_card_expire_date`;
+            DELETE FROM profiles_fields WHERE varname = 'code_card_expire_date';
         ");
         
 	}

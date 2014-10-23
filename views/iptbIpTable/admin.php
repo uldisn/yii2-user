@@ -5,11 +5,8 @@ $this->setPageTitle(
     . UserModule::t('Manage')
 );
 
-$this->breadcrumbs[] = UserModule::t('IP Tables');
-
 ?>
 
-<?php $this->widget("TbBreadcrumbs", array("links" => $this->breadcrumbs)) ?>
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
         <div class="btn-group">
@@ -49,29 +46,12 @@ $this->widget('TbGridView',
         ),
         'columns' => array(
             array(
-                'class' => 'CLinkColumn',
-                'header' => '',
-                'labelExpression' => '$data->itemLabel',
-                'urlExpression' => 'Yii::app()->controller->createUrl("view", array("iptb_id" => $data["iptb_id"]))'
-            ),
-            array(
-                'class' => 'editable.EditableColumn',
-                'name' => 'iptb_id',
-                'editable' => array(
-                    'url' => $this->createUrl('/user/iptbIpTable/editableSaver'),
-                    //'placement' => 'right',
-                ),
-                'htmlOptions' => array(
-                    'class' => 'numeric-column',
-                ),
-            ),
-            array(
                 //varchar(255)
                 'class' => 'editable.EditableColumn',
                 'name' => 'iptb_name',
                 'editable' => array(
                     'url' => $this->createUrl('/user/iptbIpTable/editableSaver'),
-                    //'placement' => 'right',
+                    'placement' => 'right',
                 )
             ),
             array(
@@ -107,18 +87,16 @@ $this->widget('TbGridView',
             array(
                 'class' => 'TbButtonColumn',
                 'buttons' => array(
-                    'view' => array('visible' => 'Yii::app()->user->checkAccess("User.IptbIpTable.View")'),
+                    'view' => array('visible' => 'FALSE'),
                     'update' => array('visible' => 'FALSE'),
                     'delete' => array('visible' => 'Yii::app()->user->checkAccess("User.IptbIpTable.Delete")'),
                 ),
-                'viewButtonUrl' => 'Yii::app()->controller->createUrl("view", array("iptb_id" => $data->iptb_id))',
                 'deleteButtonUrl' => 'Yii::app()->controller->createUrl("delete", array("iptb_id" => $data->iptb_id))',
                 'deleteConfirmation'=>Yii::t('','Do you want to delete this item?'),                    
-                'viewButtonOptions'=>array('data-toggle'=>'tooltip'),   
                 'deleteButtonOptions'=>array('data-toggle'=>'tooltip'),   
             ),
         )
     )
 );
-?>
-<?php Yii::endProfile('IptbIpTable.view.grid'); ?>
+
+Yii::endProfile('IptbIpTable.view.grid');

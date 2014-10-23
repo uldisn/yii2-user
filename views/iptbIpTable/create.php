@@ -5,8 +5,6 @@ $this->setPageTitle(
     . UserModule::t('Create')
 );
 
-$this->breadcrumbs[UserModule::t('IP Tables')] = array('admin');
-$this->breadcrumbs[] = UserModule::t('Create');
 $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
     #"label"=>Yii::t("","Cancel"),
     "icon"=>"chevron-left",
@@ -21,7 +19,6 @@ $cancel_buton = $this->widget("bootstrap.widgets.TbButton", array(
  ),true);
     
 ?>
-<?php $this->widget("TbBreadcrumbs", array("links" => $this->breadcrumbs)) ?>
 <div class="clearfix">
     <div class="btn-toolbar pull-left">
         <div class="btn-group"><?php echo $cancel_buton;?></div>

@@ -12,55 +12,41 @@ class IptbIpTableController extends Controller
     public $menu_route = "user/iptbIpTable";  
 
 
-public function filters()
-{
-    return array(
-        'accessControl',
-    );
-}
-
-public function accessRules()
-{
-     return array(
-        array(
-            'allow',
-            'actions' => array('create', 'admin', 'view', 'update', 'editableSaver', 'delete','ajaxCreate'),
-            'roles' => array('User.IptbIpTable.*'),
-        ),
-        array(
-            'allow',
-            'actions' => array('create','ajaxCreate'),
-            'roles' => array('User.IptbIpTable.Create'),
-        ),
-        array(
-            'allow',
-            'actions' => array('view', 'admin'), // let the user view the grid
-            'roles' => array('User.IptbIpTable.View'),
-        ),
-        array(
-            'allow',
-            'actions' => array('update', 'editableSaver'),
-            'roles' => array('User.IptbIpTable.Update'),
-        ),
-        array(
-            'allow',
-            'actions' => array('delete'),
-            'roles' => array('User.IptbIpTable.Delete'),
-        ),
-        array(
-            'deny',
-            'users' => array('*'),
-        ),
-    );
-}
-
-    public function beforeAction($action)
+    public function filters()
     {
-        parent::beforeAction($action);
-        if ($this->module !== null) {
-            $this->breadcrumbs[$this->module->Id] = array('/' . $this->module->Id);
-        }
-        return true;
+        return array(
+            'accessControl',
+        );
+    }
+
+    public function accessRules()
+    {
+         return array(
+            array(
+                'allow',
+                'actions' => array('create', 'admin',  'editableSaver', 'delete'),
+                'roles' => array('User.IptbIpTable.*'),
+            ),
+            array(
+                'allow',
+                'actions' => array('admin'), // let the user view the grid
+                'roles' => array('User.IptbIpTable.View'),
+            ),
+            array(
+                'allow',
+                'actions' => array('editableSaver'),
+                'roles' => array('User.IptbIpTable.Update'),
+            ),
+            array(
+                'allow',
+                'actions' => array('delete'),
+                'roles' => array('User.IptbIpTable.Delete'),
+            ),
+            array(
+                'deny',
+                'users' => array('*'),
+            ),
+        );
     }
 
     public function actionView($iptb_id, $ajax = false)
@@ -93,7 +79,7 @@ public function accessRules()
                     if (isset($_GET['returnUrl'])) {
                         $this->redirect($_GET['returnUrl']);
                     } else {
-                        $this->redirect(array('view', 'iptb_id' => $model->iptb_id));
+                        $this->redirect(array('admin'));
                     }
                 }
             } catch (Exception $e) {
@@ -106,54 +92,12 @@ public function accessRules()
         $this->render('create', array('model' => $model));
     }
 
-    public function actionUpdate($iptb_id)
-    {
-        $model = $this->loadModel($iptb_id);
-        $model->scenario = $this->scenario;
-
-        $this->performAjaxValidation($model, 'iptb-ip-table-form');
-
-        if (isset($_POST['IptbIpTable'])) {
-            $model->attributes = $_POST['IptbIpTable'];
-
-
-            try {
-                if ($model->save()) {
-                    if (isset($_GET['returnUrl'])) {
-                        $this->redirect($_GET['returnUrl']);
-                    } else {
-                        $this->redirect(array('view', 'iptb_id' => $model->iptb_id));
-                    }
-                }
-            } catch (Exception $e) {
-                $model->addError('iptb_id', $e->getMessage());
-            }
-        }
-
-        $this->render('update', array('model' => $model));
-    }
-
     public function actionEditableSaver()
     {
         $es = new EditableSaver('IptbIpTable'); // classname of model to be updated
         $es->update();
     }
 
-    public function actionAjaxCreate($field, $value) 
-    {
-        $model = new IptbIpTable;
-        $model->$field = $value;
-        try {
-            if ($model->save()) {
-                return TRUE;
-            }else{
-                return var_export($model->getErrors());
-            }            
-        } catch (Exception $e) {
-            throw new CHttpException(500, $e->getMessage());
-        }
-    }
-    
     public function actionDelete($iptb_id)
     {
         if (Yii::app()->request->isPostRequest) {

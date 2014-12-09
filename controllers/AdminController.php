@@ -30,7 +30,7 @@ class AdminController extends Controller
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin
-				'actions'=>array('admin','delete','create','update','view','genCodeCard'),
+				'actions'=>array('admin','delete','create','update','view','genCodeCard','emailInvitation'),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
 			array('deny',  // deny all users
@@ -467,7 +467,46 @@ class AdminController extends Controller
         
     }
 	
-	/**
+    /**
+     * send invitation/password reset to user email and redirect ot view with message
+     * 
+     */
+    public function actionEmailInvitation(){
+        
+        //generate password
+        $password = DbrLib::rand_string(8);
+        
+        //save password
+        $model = $this->loadModel();
+        $model->password=Yii::app()->controller->module->encrypting($password);
+        $model->save();        
+        
+        //message
+        $subject = Yii::app()->name;        
+        $message = 'For access to system please use. <br />
+                    link: '.Yii::app()->getBaseUrl(true) . '/<br />
+                    username: <b>'. $model->username.'</b>,
+                    password:<b> '.$password.'</b>';
+
+        
+        //create message
+        $swiftMessage = Swift_Message::newInstance($subject);
+        $swiftMessage->setBody($message, 'text/html');
+        $swiftMessage->setFrom(Yii::app()->emailManager->fromEmail, Yii::app()->emailManager->fromName);
+        $swiftMessage->setTo($model->email, $model->profile->first_name . ' ' . $model->profile->last_name);
+
+        //send
+        if(Yii::app()->emailManager->deliver($swiftMessage, 'smtp')){
+            //redirecto view as ok
+            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
+        }else{
+            //redirecto view as error
+            $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
+        }
+        
+    }
+
+        /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
      */
@@ -479,6 +518,7 @@ class AdminController extends Controller
             Yii::app()->end();
         }
     }
+    
 	
 	
 	/**

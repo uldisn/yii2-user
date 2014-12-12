@@ -26,11 +26,15 @@ class AdminController extends Controller
 		return array(
 			array('allow', // allow admin user to view other users
 				//'actions'=>array('admin','delete','create','update','view'),
-                'actions'=>array('admin','view'),
+                'actions'=>array('admin','view','customerAdmin'),
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin
-				'actions'=>array('admin','delete','create','update','view','genCodeCard','emailInvitation'),
+				'actions'=>array(
+                    'admin','delete','create','update','view',
+                    'genCodeCard','emailInvitation','customerAdmin',
+                    'viewCustomer','editableSaver',
+                    ),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
 			array('deny',  // deny all users
@@ -62,6 +66,32 @@ class AdminController extends Controller
         $this->render($view,array(
             'model'=>$model,
         ));
+
+	}
+
+    /**
+	 * Manages all models.
+	 */
+	public function actionCustomerAdmin()
+	{
+        $this->menu_route = "user/admin/customerAdmin";  
+        $this->layout='';
+        
+        $view = 'customer_index';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }          
+        
+		$model=new User('search');
+        $model->unsetAttributes();  // clear any default values
+        if(isset($_GET['User']))
+            $model->attributes=$_GET['User'];
+
+        $this->render($view,array('model'=>$model,));
 
 	}
 
@@ -224,6 +254,31 @@ class AdminController extends Controller
 		));
 	}
 
+    /**
+	 * Displays customer user.
+	 */
+	public function actionViewCustomer()
+	{
+        $this->menu_route = "user/admin/customerAdmin";  
+        $this->layout='';
+        $model = $this->loadModel();
+        
+        
+        $view = 'view_customer';       
+        if(Yii::app()->getModule('user')->view){
+            $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
+                $view = $alt_view;
+                $this->layout=Yii::app()->getModule('user')->layout;
+            }
+        }           
+        
+		$model = $this->loadModel();
+		$this->render($view,array(
+			'model'=>$model,
+		));
+	}
+
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -236,7 +291,20 @@ class AdminController extends Controller
 		$this->performAjaxValidation(array($model,$profile));
 		if(isset($_POST['User']))
 		{
-			$model->attributes=$_POST['User'];
+            $post_user = $_POST['User'];
+            
+            /**
+             * for customer user 
+             *  - email is username
+             *  - password generated
+             */
+            if(isset($_POST['user_type']) && $_POST['user_type'] == 'customer'){
+                $post_user['username'] = $post_user['email'];
+                $post_user['password'] = DbrLib::rand_string(8);
+                $post_user['status'] = User::STATUS_ACTIVE;
+            }
+            
+			$model->attributes=$post_user;
 			$model->activkey=Yii::app()->controller->module->encrypting(microtime().$model->password);
 			$profile->attributes=$_POST['Profile'];
 			$profile->user_id=0;
@@ -249,21 +317,43 @@ class AdminController extends Controller
                         $model_person = new PprsPerson;
                         $model_person->pprs_first_name = $profile->first_name;
                         $model_person->pprs_second_name = $profile->last_name;
-                        $model_person->pprs_ccmp_id = Yii::app()->sysCompany->getActiveCompany();
-
+                        $model_person->pprs_ccmp_id = $post_user['ccmp_id'];
                         $model_person->save();
-                        
 
                     }
 					$profile->user_id=$model->id;
 					$profile->person_id=$model_person->primaryKey;
-					$profile->save();                    
+					$profile->save();         
+                    
+                    /**
+                     * customer user
+                     * - add role user customer
+                     * - redirect to view
+                     */
+                    if(isset($_POST['user_type']) && $_POST['user_type'] == 'customer'){ 
+                        
+                        //add role user customer
+                        $aa_model = new Authassignment;
+                        $aa_model->itemname = Yii::app()->getModule('user')->customerUser['role'];
+                        $aa_model->userid = $model->id; 
+                        $aa_model->save();
+                        
+                        //redirect to view
+                        $this->redirect(array('viewCustomer','id'=>$model->id));
+                    }    
+                    
 				}
 				$this->redirect(array('view','id'=>$model->id));
 			} else $profile->validate();
 		}
 
-        $view = 'create';       
+        if(isset($_GET['type']) && $_GET['type'] == 'customer'){
+            $this->menu_route = "user/admin/customerAdmin";  
+            $view = 'create_customer';       
+        }else{
+            $view = 'create';       
+        }
+        
         if(Yii::app()->getModule('user')->view){
             $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
             if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
@@ -278,6 +368,12 @@ class AdminController extends Controller
 		));
 	}
 
+    public function actionEditableSaver()
+    {
+        $es = new EditableSaver('User'); // classname of model to be updated
+        $es->update();
+    }    
+    
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.

@@ -161,6 +161,15 @@ class UserModule extends CWebModule
     public $options = array();
     
     /**
+     * setings for customer user
+     * role - customer role
+     * @var array 
+     */    
+    public $customerUser = array();
+    
+    
+    
+    /**
      * Code card settings. Not active by default
      */
     public $codeCard = array(

@@ -237,7 +237,9 @@ class User extends CActiveRecord
         $criteria->compare('lastvisit_at',$this->lastvisit_at);
         $criteria->compare('superuser',$this->superuser);
         $criteria->compare('status',$this->status);
-        $criteria->addCondition(" NOT user.id in (select userid from authassignment where itemname = '".Yii::app()->getModule('user')->customerUser['role']."' )");
+        if(isset(Yii::app()->getModule('user')->customerUser['role'])){
+            $criteria->addCondition(" NOT user.id in (select userid from authassignment where itemname = '".Yii::app()->getModule('user')->customerUser['role']."' )");
+        }
 
         if (Yii::app()->sysCompany->getActiveCompanyName()){
             $criteria->join = " INNER JOIN profiles ON user.id = profiles.user_id ";

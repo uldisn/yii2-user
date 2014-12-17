@@ -317,7 +317,11 @@ class AdminController extends Controller
                         $model_person = new PprsPerson;
                         $model_person->pprs_first_name = $profile->first_name;
                         $model_person->pprs_second_name = $profile->last_name;
-                        $model_person->pprs_ccmp_id = $post_user['ccmp_id'];
+                        if(isset($post_user['ccmp_id'])){
+                            $model_person->pprs_ccmp_id = $post_user['ccmp_id'];
+                        }else{
+                            $model_person->pprs_ccmp_id = Yii::app()->sysCompany->getActiveCompany();
+                        }
                         $model_person->save();
 
                     }

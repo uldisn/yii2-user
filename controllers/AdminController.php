@@ -145,10 +145,11 @@ class AdminController extends Controller
                 }
 
                 if(!empty($aDelRole)){
-                    Authassignment::model()->deleteAll(
-                        "`userid` = :userid AND itemname in('".implode("','",$aDelRole)."')",
-                    array(':userid' => $model->id)
-                    );            
+                    $criteria = new CDbCriteria;
+                    $criteria
+                        ->compare('userid',$model->id)
+                        ->compare('itemname',$aDelRole);
+                    Authassignment::model()->deleteAll($criteria);
                 }
             }
             //checked companies
@@ -202,15 +203,12 @@ class AdminController extends Controller
             }
 
             if(!empty($aDelSysCcmpid)){
-                CcucUserCompany::model()->deleteAll(
-                    "`ccuc_status` = :ccuc_status "
-                        . " AND `ccuc_person_id` = :ccuc_person_id "
-                        . " AND ccuc_ccmp_id in('".implode("','",$aDelSysCcmpid)."')",
-                array(
-                    ':ccuc_person_id' => $model->profile->person_id,
-                    ':ccuc_status' => CcucUserCompany::CCUC_STATUS_SYS
-                    )
-                );            
+                $criteria = new CDbCriteria;
+                    $criteria
+                        ->compare('ccuc_status', CcucUserCompany::CCUC_STATUS_SYS)
+                        ->compare('ccuc_person_id',$model->profile->person_id)
+                        ->compare('ccuc_ccmp_id',$aDelSysCcmpid);
+                CcucUserCompany::model()->deleteAll($criteria);
             }
             
             $security_policy = Yii::app()->getModule('user')->SecurityPolicy;
@@ -606,7 +604,7 @@ class AdminController extends Controller
         
     }
 
-        /**
+    /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
      */
@@ -618,8 +616,6 @@ class AdminController extends Controller
             Yii::app()->end();
         }
     }
-    
-	
 	
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

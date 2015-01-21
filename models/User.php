@@ -69,7 +69,7 @@ class User extends CActiveRecord
                 array('email', 'email'),
                 array('username', 'unique', 'message' => UserModule::t("This user's name already exists.")),
                 array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-                array('username', 'match', 'pattern' => '/^[A-Za-z0-9_@\.]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
+                array('username', 'match', 'pattern' => '/^[A-Za-z0-9_@\.-]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
                 array('status', 'in', 'range'=>array(self::STATUS_NOACTIVE,self::STATUS_ACTIVE,self::STATUS_BANNED)),
                 array('superuser', 'in', 'range'=>array(0,1)),
                 array('create_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),

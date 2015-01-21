@@ -25,7 +25,7 @@ return array(
 	'Retype Password' => 'Slaptažodžio patvirtinimas',
 	'Retype Password is incorrect.' => 'Slaptažodžiai nesutampa.',
 	'Incorrect password (minimal length 4 symbols).' => 'Minimalus slaptažodžio simbolių skaičius 4.',
-	'Incorrect username (length between 3 and 20 characters).' => 'Vartotojo vardo ilgis nuo 3 iki 20 simbolių.',
+	'Incorrect username (length between 3 and 128 characters).' => 'Vartotojo vardo ilgis nuo 3 iki 128 simbolių.',
 	"Incorrect symbols (A-z0-9)." => 'Vartotojo vardui galima naudoti tik lotiniškas raides ir skaičius.',
 	'Variable name may consist of a-z, 0-9, underscores, begin with a letter.'=>'Keičiant pavadinimą galima naudoti tik lotiniškas raides, skaičius ir pabrėžimo simbolį.',
 	"Length of ' + n + ' must be between '+min+' and '+max+'."=>"Ilgis ' + n + ' turi būti ne mažiau '+min+' ir nedaugiau '+max+' simbolių.",

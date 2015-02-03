@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "phpseclib/phpseclib": "0.3.*",
-        "swiftmailer/swiftmailer": "5.*"
+        "swiftmailer/swiftmailer": "5.*",
+        "phpseclib/phpseclib": "0.3.*"
     }
 }

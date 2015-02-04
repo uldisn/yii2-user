@@ -586,21 +586,30 @@ class AdminController extends Controller
                     username: <b>'. $model->username.'</b>,
                     password:<b> '.$password.'</b>';
 
-        
-        //create message
-        $swiftMessage = Swift_Message::newInstance($subject);
-        $swiftMessage->setBody($message, 'text/html');
-        $swiftMessage->setFrom(Yii::app()->emailManager->fromEmail, Yii::app()->emailManager->fromName);
-        $swiftMessage->setTo($model->email, $model->profile->first_name . ' ' . $model->profile->last_name);
-
-        //send
-        if(Yii::app()->emailManager->deliver($swiftMessage, 'smtp')){
-            //redirecto view as ok
-            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
-        }else{
-            //redirecto view as error
+        Yii::import('vendor.dbrisinajumi.d2mailer.components.*');
+        $d2mailer = new d2mailer();
+        if($d2mailer->sendMailToUser($model->id,$subject,$message) === false){
             $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
+        }else{
+            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
         }
+        
+        
+        
+//        //create message
+//        $swiftMessage = Swift_Message::newInstance($subject);
+//        $swiftMessage->setBody($message, 'text/html');
+//        $swiftMessage->setFrom(Yii::app()->emailManager->fromEmail, Yii::app()->emailManager->fromName);
+//        $swiftMessage->setTo($model->email, $model->profile->first_name . ' ' . $model->profile->last_name);
+//
+//        //send
+//        if(Yii::app()->emailManager->deliver($swiftMessage, 'smtp')){
+//            //redirecto view as ok
+//            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
+//        }else{
+//            //redirecto view as error
+//            $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
+//        }
         
     }
 

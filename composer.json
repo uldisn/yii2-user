@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "swiftmailer/swiftmailer": "5.*",
+        "dbrisinajumi/d2mailer": "dev-master",
         "phpseclib/phpseclib": "0.3.*"
     }
 }

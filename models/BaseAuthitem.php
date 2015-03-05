@@ -27,7 +27,7 @@ abstract class BaseAuthitem extends CActiveRecord
 
     public function tableName()
     {
-        return 'authitem';
+        return 'AuthItem';
     }
 
     public function rules()

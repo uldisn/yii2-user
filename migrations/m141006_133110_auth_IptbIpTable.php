@@ -17,10 +17,10 @@ class m141006_133110_auth_IptbIpTable extends CDbMigration
             INSERT INTO `AuthItem` VALUES('User.IptbIpTableDelete', 2, 'User.IptbIpTable delete', NULL, 'N;');
             INSERT INTO `AuthItem` VALUES('User.IptbIpTableView', 2, 'User.IptbIpTable view', NULL, 'N;');
             
-            INSERT INTO `authitemchild` VALUES('User.IptbIpTableCreate', 'User.IptbIpTable.Create');
-            INSERT INTO `authitemchild` VALUES('User.IptbIpTableUpdate', 'User.IptbIpTable.Update');
-            INSERT INTO `authitemchild` VALUES('User.IptbIpTableDelete', 'User.IptbIpTable.Delete');
-            INSERT INTO `authitemchild` VALUES('User.IptbIpTableView', 'User.IptbIpTable.View');
+            INSERT INTO `AuthItemChild` VALUES('User.IptbIpTableCreate', 'User.IptbIpTable.Create');
+            INSERT INTO `AuthItemChild` VALUES('User.IptbIpTableUpdate', 'User.IptbIpTable.Update');
+            INSERT INTO `AuthItemChild` VALUES('User.IptbIpTableDelete', 'User.IptbIpTable.Delete');
+            INSERT INTO `AuthItemChild` VALUES('User.IptbIpTableView', 'User.IptbIpTable.View');
 
         ");
     }
@@ -28,8 +28,8 @@ class m141006_133110_auth_IptbIpTable extends CDbMigration
     public function down()
     {
         $this->execute("
-            DELETE FROM `authitemchild` WHERE `parent` = 'User.IptbIpTableEdit';
-            DELETE FROM `authitemchild` WHERE `parent` = 'User.IptbIpTableView';
+            DELETE FROM `AuthItemChild` WHERE `parent` = 'User.IptbIpTableEdit';
+            DELETE FROM `AuthItemChild` WHERE `parent` = 'User.IptbIpTableView';
 
             DELETE FROM `AuthItem` WHERE `name` = 'User.IptbIpTable.*';
             DELETE FROM `AuthItem` WHERE `name` = 'User.IptbIpTable.edit';

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * This is the model base class for the table "authassignment".
+ * This is the model base class for the table "AuthAssignment".
  *
- * Columns in table "authassignment" available as properties of the model:
+ * Columns in table "AuthAssignment" available as properties of the model:
  * @property string $itemname
  * @property string $userid
  * @property string $bizrule
  * @property string $data
  *
- * Relations of table "authassignment" available as properties of the model:
+ * Relations of table "AuthAssignment" available as properties of the model:
  * @property Authitem $itemname0
  */
 abstract class BaseAuthassignment extends CActiveRecord
@@ -22,7 +22,7 @@ abstract class BaseAuthassignment extends CActiveRecord
 
     public function tableName()
     {
-        return 'authassignment';
+        return 'AuthAssignment';
     }
 
     public function rules()

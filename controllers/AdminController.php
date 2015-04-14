@@ -25,8 +25,7 @@ class AdminController extends Controller
 	{
 		return array(
 			array('allow', // allow admin user to view other users
-				//'actions'=>array('admin','delete','create','update','view'),
-                'actions'=>array('admin','view','customerAdmin'),
+                'actions'=>array('admin','view','customerAdmin','viewCustomer','editableSaver'),
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin

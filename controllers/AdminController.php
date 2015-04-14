@@ -271,7 +271,6 @@ class AdminController extends Controller
             }
         }           
         
-		$model = $this->loadModel();
 		$this->render($view,array(
 			'model'=>$model,
 		));

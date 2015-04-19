@@ -4,6 +4,8 @@ class User extends CActiveRecord
 {
     public $ccmp_id;
     public $ccmp_name;
+    public $first_name;
+    public $last_name;
     
 	const STATUS_NOACTIVE=0;
 	const STATUS_ACTIVE=1;
@@ -69,7 +71,7 @@ class User extends CActiveRecord
                 array('email', 'email'),
                 array('username', 'unique', 'message' => UserModule::t("This user's name already exists.")),
                 array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-                array('username', 'match', 'pattern' => '/^[A-Za-z0-9_@\.]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
+                array('username', 'match', 'pattern' => '/^[A-Za-z0-9_@\.-]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
                 array('status', 'in', 'range'=>array(self::STATUS_NOACTIVE,self::STATUS_ACTIVE,self::STATUS_BANNED)),
                 array('superuser', 'in', 'range'=>array(0,1)),
                 array('create_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
@@ -83,7 +85,7 @@ class User extends CActiveRecord
         if (Yii::app()->user->id == $this->id) {
             array(
                 array('username, email', 'required'),
-                array('username', 'length', 'max' => 20, 'min' => 3, 'message' => UserModule::t("Incorrect username (length between 3 and 20 characters).")),
+                array('username', 'length', 'max' => 128, 'min' => 3, 'message' => UserModule::t("Incorrect username (length between 3 and 128 characters).")),
                 array('email', 'email'),
                 array('username', 'unique', 'message' => UserModule::t("This user's name already exists.")),
                 array('username', 'match', 'pattern' => '/^[A-Za-z0-9_]+$/u', 'message' => UserModule::t("Incorrect symbols (A-z0-9).")),
@@ -238,7 +240,7 @@ class User extends CActiveRecord
         $criteria->compare('superuser',$this->superuser);
         $criteria->compare('status',$this->status);
         if(isset(Yii::app()->getModule('user')->customerUser['role'])){
-            $criteria->addCondition(" NOT user.id in (select userid from authassignment where itemname = '".Yii::app()->getModule('user')->customerUser['role']."' )");
+            $criteria->addCondition(" NOT user.id in (select userid from AuthAssignment where itemname = '".Yii::app()->getModule('user')->customerUser['role']."' )");
         }
 
         if (Yii::app()->sysCompany->getActiveCompanyName()){
@@ -263,7 +265,10 @@ class User extends CActiveRecord
     {
 
         $criteria=new CDbCriteria;
-        $criteria->select = 'id,username,email,create_at,lastvisit_at,status,ccmp_company.ccmp_name as ccmp_name';
+        $criteria->select = ' 
+                id,username,email,create_at,lastvisit_at,status,
+                ccmp_company.ccmp_name as ccmp_name';
+                //`p`.first_name p_first_name ,`p`.last_name ';
         $criteria->compare('id',$this->id);
         $criteria->compare('username',$this->username,true);
         $criteria->compare('email',$this->email,true);
@@ -274,19 +279,18 @@ class User extends CActiveRecord
 
         if (Yii::app()->sysCompany->getActiveCompanyName()){
             $criteria->join = "
-                INNER JOIN authassignment aa 
+                INNER JOIN AuthAssignment aa 
                     ON user.id = aa.userid
                         AND itemname = '".Yii::app()->getModule('user')->customerUser['role']."'
-                INNER JOIN profiles 
-                    ON user.id = profiles.user_id 
-                    
+                INNER JOIN profiles as p
+                    ON user.id = p.user_id 
                 INNER JOIN ccuc_user_company 
-                    ON profiles.person_id = ccuc_person_id 
-                        AND ccuc_status = '".CcucUserCompany::CCUC_STATUS_SYS."'                     
+                    ON p.person_id = ccuc_person_id 
+                        AND ccuc_status = '".CcucUserCompany::CCUC_STATUS_PERSON."'                     
                 LEFT OUTER JOIN ccmp_company 
-                    ON profiles.ccmp_id = ccmp_company.ccmp_id 
+                    ON ccuc_ccmp_id = ccmp_company.ccmp_id 
             ";
-            $criteria->compare('ccuc_ccmp_id', Yii::app()->sysCompany->getActiveCompany());
+            //$criteria->compare('ccuc_ccmp_id', Yii::app()->sysCompany->getActiveCompany());
         }          
         
         return new CActiveDataProvider(get_class($this), array(

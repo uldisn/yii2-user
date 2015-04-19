@@ -26,7 +26,7 @@ return array(
 	'Retype Password' => 'Apstipriniet paroli',
 	'Retype Password is incorrect.' => 'Paroles nesakrīt.',
 	'Incorrect password (minimal length 4 symbols).' => 'Minimālais paroles garums ir 4 simboli.',
-	'Incorrect username (length between 3 and 20 characters).' => 'Lietotāja vārda garums ir no 3 līdz 20 simboliem.',
+	'Incorrect username (length between 3 and 128 characters).' => 'Lietotāja vārda garums ir no 3 līdz 128 simboliem.',
 	"Incorrect symbols (A-z0-9)." => 'Lietotājvārdam ir atļauts izmantot tikai latīnu burtus un ciparus.',
 	'Variable name may consist of a-z, 0-9, underscores, begin with a letter.'=>'Mainīgā nosaukumā ir pieļaujami tikai latīņu , cipari un psavītrojuma simbols.',
 	"Length of ' + n + ' must be between '+min+' and '+max+'."=>"Garumam ' + n + ' jābūt vismaz '+min+', bet ne garākam par '+max+' simboliem.",

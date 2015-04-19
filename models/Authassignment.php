@@ -78,7 +78,7 @@ class Authassignment extends BaseAuthassignment
                 SELECT DISTINCT 
                   p.person_id 
                 FROM
-                  authassignment aa 
+                  AuthAssignment aa 
                   INNER JOIN users u 
                     ON aa.userid = u.id 
                   INNER JOIN `profiles` p 

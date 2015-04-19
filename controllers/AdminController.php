@@ -25,8 +25,7 @@ class AdminController extends Controller
 	{
 		return array(
 			array('allow', // allow admin user to view other users
-				//'actions'=>array('admin','delete','create','update','view'),
-                'actions'=>array('admin','view','customerAdmin'),
+                'actions'=>array('admin','view','customerAdmin','viewCustomer','editableSaver'),
 				'users'=>UserModule::getAdmins(),
 			),
 			array('allow', // for UserAdmin
@@ -145,10 +144,11 @@ class AdminController extends Controller
                 }
 
                 if(!empty($aDelRole)){
-                    Authassignment::model()->deleteAll(
-                        "`userid` = :userid AND itemname in('".implode("','",$aDelRole)."')",
-                    array(':userid' => $model->id)
-                    );            
+                    $criteria = new CDbCriteria;
+                    $criteria
+                        ->compare('userid',$model->id)
+                        ->compare('itemname',$aDelRole);
+                    Authassignment::model()->deleteAll($criteria);
                 }
             }
             //checked companies
@@ -202,15 +202,12 @@ class AdminController extends Controller
             }
 
             if(!empty($aDelSysCcmpid)){
-                CcucUserCompany::model()->deleteAll(
-                    "`ccuc_status` = :ccuc_status "
-                        . " AND `ccuc_person_id` = :ccuc_person_id "
-                        . " AND ccuc_ccmp_id in('".implode("','",$aDelSysCcmpid)."')",
-                array(
-                    ':ccuc_person_id' => $model->profile->person_id,
-                    ':ccuc_status' => CcucUserCompany::CCUC_STATUS_SYS
-                    )
-                );            
+                $criteria = new CDbCriteria;
+                    $criteria
+                        ->compare('ccuc_status', CcucUserCompany::CCUC_STATUS_SYS)
+                        ->compare('ccuc_person_id',$model->profile->person_id)
+                        ->compare('ccuc_ccmp_id',$aDelSysCcmpid);
+                CcucUserCompany::model()->deleteAll($criteria);
             }
             
             $security_policy = Yii::app()->getModule('user')->SecurityPolicy;
@@ -273,7 +270,6 @@ class AdminController extends Controller
             }
         }           
         
-		$model = $this->loadModel();
 		$this->render($view,array(
 			'model'=>$model,
 		));
@@ -588,25 +584,34 @@ class AdminController extends Controller
                     username: <b>'. $model->username.'</b>,
                     password:<b> '.$password.'</b>';
 
-        
-        //create message
-        $swiftMessage = Swift_Message::newInstance($subject);
-        $swiftMessage->setBody($message, 'text/html');
-        $swiftMessage->setFrom(Yii::app()->emailManager->fromEmail, Yii::app()->emailManager->fromName);
-        $swiftMessage->setTo($model->email, $model->profile->first_name . ' ' . $model->profile->last_name);
-
-        //send
-        if(Yii::app()->emailManager->deliver($swiftMessage, 'smtp')){
-            //redirecto view as ok
-            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
-        }else{
-            //redirecto view as error
+        Yii::import('vendor.dbrisinajumi.d2mailer.components.*');
+        $d2mailer = new d2mailer();
+        if($d2mailer->sendMailToUser($model->id,$subject,$message) === false){
             $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
+        }else{
+            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
         }
+        
+        
+        
+//        //create message
+//        $swiftMessage = Swift_Message::newInstance($subject);
+//        $swiftMessage->setBody($message, 'text/html');
+//        $swiftMessage->setFrom(Yii::app()->emailManager->fromEmail, Yii::app()->emailManager->fromName);
+//        $swiftMessage->setTo($model->email, $model->profile->first_name . ' ' . $model->profile->last_name);
+//
+//        //send
+//        if(Yii::app()->emailManager->deliver($swiftMessage, 'smtp')){
+//            //redirecto view as ok
+//            $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        
+//        }else{
+//            //redirecto view as error
+//            $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
+//        }
         
     }
 
-        /**
+    /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
      */
@@ -618,8 +623,6 @@ class AdminController extends Controller
             Yii::app()->end();
         }
     }
-    
-	
 	
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

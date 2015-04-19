@@ -32,7 +32,7 @@
 													<fieldset>
 														<label>
 															<span class="block input-icon input-icon-right">
-																<input type="text" class="span12" placeholder="Username" name="UserLogin[username]"/>
+																<input type="text" class="span12" placeholder="Username" name="UserLogin[username]" maxlength="128" />
 																<i class="icon-user"></i>
 															</span>
 														</label>

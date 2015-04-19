@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "dbrisinajumi/d2mailer": "dev-master",
         "phpseclib/phpseclib": "0.3.*"
     }
 }

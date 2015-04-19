@@ -8,7 +8,7 @@ class LoginController extends Controller
 	 * Displays the login page
 	 */
 	public function actionLogin()
-	{
+	{                    
 		if (Yii::app()->user->isGuest) {
 			$model=new UserLogin;
 			// collect user input data
@@ -31,8 +31,17 @@ class LoginController extends Controller
             
 			// display the login form
 			//$this->render('/user/login',array('model'=>$model));
+                        
+                        // special view for www login form
+                        
+                        if (isset($_GET['www'])) {
+                           
+                            $this->render('/user/www_login',array('model'=>$model));
+                        }    
+                        else
                             $this->render('/user/ace_login',array('model'=>$model));
-		} else
+		} elseif (isset($_GET['www']))  Yii::app()->end();
+                else
 			$this->redirect(Yii::app()->controller->module->returnUrl);
 	}
         

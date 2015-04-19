@@ -9,6 +9,9 @@ class LoginController extends Controller
 	 */
 	public function actionLogin()
 	{
+                if (isset($_POST['ajaxstatus']))
+                    $this->AjaxStatus();
+                    
 		if (Yii::app()->user->isGuest) {
 			$model=new UserLogin;
 			// collect user input data
@@ -31,10 +34,36 @@ class LoginController extends Controller
             
 			// display the login form
 			//$this->render('/user/login',array('model'=>$model));
-			$this->render('/user/ace_login',array('model'=>$model));
-		} else
+                        
+                        // special view for www login form
+                        
+                        if (isset($_GET['www'])) {
+                           
+                            $this->render('/user/www_login',array('model'=>$model));
+                        }    
+                        else
+                            $this->render('/user/ace_login',array('model'=>$model));
+		} elseif (isset($_GET['www'])) exit;
+                else
 			$this->redirect(Yii::app()->controller->module->returnUrl);
 	}
+        
+    public function actionAjaxStatus(){
+        
+      //  header("content-type:application/json");
+        if (Yii::app()->user->isGuest) {
+            echo $_GET['callback']."(".json_encode(array('status' => 0)).")";
+        } else {
+        
+            $user = Yii::app()->user->name;
+            echo $_GET['callback']."(".json_encode(array('status' => 1, 'user' => $user)).")";
+        }    
+        
+        Yii::app()->end();
+    }  
+    
+  
+        
     
     public function actionEnterCode()
     {

@@ -68,7 +68,7 @@ return array(
 	'Not active' => 'Не активирован',
 	'Active' => 'Активирован',
 	'Banned' => 'Заблокирован',
-	'Please fill out the following form with your login credentials:' => 'Пожалуйста, заполните следующую форму с вашими Логин и паролем:',
+	'Enter your login credentials:' => 'Заполните ваш Логин и пароль:',
 	'Fields with <span class="required">*</span> are required.' => '<span class="required">*</span> Обязательные поля.',
 	'List User' => 'Список пользователей',
 	'Edit' => 'Редактировать',

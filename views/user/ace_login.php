@@ -23,7 +23,7 @@
 											<div class="widget-main">
 												<h4 class="header blue lighter bigger">
 													<i class="icon-coffee green"></i>
-													<?php echo UserModule::t("Please fill out the following form with your login credentials:"); ?>
+													<?php echo UserModule::t("Fill in your login credentials:"); ?>
 												</h4>
                                                 <?php echo CHtml::errorSummary($model); ?>
 												<div class="space-6"></div>

@@ -15,7 +15,7 @@ $this->breadcrumbs=array(
 
 <?php endif; ?>
 
-<p><?php echo UserModule::t("Please fill out the following form with your login credentials:"); ?></p>
+<p><?php echo UserModule::t("Fill out login credentials:"); ?></p>
 
 <div class="form">
 <?php echo CHtml::beginForm(); ?>

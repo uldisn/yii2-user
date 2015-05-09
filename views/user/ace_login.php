@@ -5,16 +5,9 @@
 				<div class="row-fluid">
 					<div class="span12">
 						<div class="login-container">
-							<div class="row-fluid">
-								<div class="center">
-									<h1>
-										<i class="icon-leaf green"></i>
-										<span class="red"><?php echo Yii::app()->name;?></span>
-									</h1>
-								</div>
-							</div>
+							
 
-							<div class="space-6"></div>
+							
 
 							<div class="row-fluid">
 								<div class="position-relative">

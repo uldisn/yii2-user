@@ -17,13 +17,13 @@
 							<div class="space-6"></div>
 
 							<div class="row-fluid">
-								<div class="position-relative">
+								<div class="position-relative" style="top:100px;">
 									<div id="login-box" class="login-box visible widget-box no-border">
 										<div class="widget-body">
 											<div class="widget-main">
 												<h4 class="header blue lighter bigger">
 													<i class="icon-coffee green"></i>
-													<?php echo UserModule::t("Please fill out the following form with your login credentials:"); ?>
+													<?php echo UserModule::t("Enter your login credentials:"); ?>
 												</h4>
                                                 <?php echo CHtml::errorSummary($model); ?>
 												<div class="space-6"></div>

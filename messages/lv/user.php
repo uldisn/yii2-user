@@ -70,7 +70,7 @@ return array(
 	'Active' => 'Aktīvs',
     'Inactive' => 'Nektīvs',
 	'Banned' => 'Bloķēts',
-	'Please fill out the following form with your login credentials:' => 'Lūdzu aizpildiet sekojošu formu ar lietotājvārdu un paroli:',
+	'Login with your credentials:' => 'Jūsu lietotājvārds un parole:',
 	'Fields with <span class="required">*</span> are required.' => '<span class="required">*</span> Obligati aizpildāmi ievadlauki.',
 	'List User' => 'Lietotāju saraksts',
 	'Edit' => 'Labot',

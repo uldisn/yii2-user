@@ -32,7 +32,7 @@ class AdminController extends Controller
 				'actions'=>array(
                     'admin','delete','create','update','view',
                     'genCodeCard','emailInvitation','customerAdmin',
-                    'viewCustomer','editableSaver',
+                    'viewCustomer','editableSaver','customerAjaxCompanyAdd'
                     ),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
@@ -254,25 +254,38 @@ class AdminController extends Controller
     /**
 	 * Displays customer user.
 	 */
-	public function actionViewCustomer()
+	public function actionViewCustomer($ajax = false)
 	{
         $this->menu_route = "user/admin/customerAdmin";  
         $this->layout='';
         $model = $this->loadModel();
         
-        
         $view = 'view_customer';       
+        $companies_view = '_customer_companies';
+        
         if(Yii::app()->getModule('user')->view){
             $alt_view = Yii::app()->getModule('user')->view . '.admin.'.$view;
+            $alt_companies_view = Yii::app()->getModule('user')->view . '.admin.'.$companies_view;
             if (is_readable(Yii::getPathOfAlias($alt_view) . '.php')) {
                 $view = $alt_view;
+                $companies_view = $alt_companies_view;
                 $this->layout=Yii::app()->getModule('user')->layout;
             }
         }           
         
-		$this->render($view,array(
-			'model'=>$model,
-		));
+        if($ajax){
+            $this->renderPartial($companies_view,array(
+                'model'=>$model,
+                'ajax' => $ajax,
+            ));             
+        }else{
+            $this->render($view,array(
+                'model'=>$model,
+                'companies_view' => $companies_view,                
+                'ajax' => $ajax,
+            ));
+           
+        }
 	}
 
 	/**
@@ -367,6 +380,16 @@ class AdminController extends Controller
 			'profile'=>$profile,
 		));
 	}
+
+    public function actionCustomerAjaxCompanyAdd($pprs_id,$ajax){
+        
+        $ccuc = new CcucUserCompany;
+        $ccuc->ccuc_person_id = $pprs_id;
+        $ccuc->ccuc_status = CcucUserCompany::CCUC_STATUS_PERSON;
+        $ccuc->save();
+        
+    }
+
 
     public function actionEditableSaver()
     {

@@ -265,33 +265,30 @@ class User extends CActiveRecord
     {
 
         $criteria=new CDbCriteria;
-        $criteria->select = ' 
-                id,username,email,create_at,lastvisit_at,status,
-                ccmp_company.ccmp_name as ccmp_name';
-                //`p`.first_name p_first_name ,`p`.last_name ';
+        $criteria->select .= ",GROUP_CONCAT(`ccmp_company`.`ccmp_name` SEPARATOR '<br/>') as ccmp_name";
+
         $criteria->compare('id',$this->id);
         $criteria->compare('username',$this->username,true);
         $criteria->compare('email',$this->email,true);
         $criteria->compare('create_at',$this->create_at);
         $criteria->compare('lastvisit_at',$this->lastvisit_at);
         $criteria->compare('status',$this->status);
-        //$criteria->compare('profiles.ccmp_id',$this->ccmp_id);
 
-        if (Yii::app()->sysCompany->getActiveCompanyName()){
-            $criteria->join = "
-                INNER JOIN AuthAssignment aa 
-                    ON user.id = aa.userid
-                        AND itemname = '".Yii::app()->getModule('user')->customerUser['role']."'
-                INNER JOIN profiles as p
-                    ON user.id = p.user_id 
-                INNER JOIN ccuc_user_company 
-                    ON p.person_id = ccuc_person_id 
-                        AND ccuc_status = '".CcucUserCompany::CCUC_STATUS_PERSON."'                     
-                LEFT OUTER JOIN ccmp_company 
-                    ON ccuc_ccmp_id = ccmp_company.ccmp_id 
-            ";
-            //$criteria->compare('ccuc_ccmp_id', Yii::app()->sysCompany->getActiveCompany());
-        }          
+        $criteria->join = "
+            INNER JOIN profiles as p
+                ON user.id = p.user_id 
+            INNER JOIN ccuc_user_company 
+                ON p.person_id = ccuc_person_id 
+                    AND ccuc_status = '".CcucUserCompany::CCUC_STATUS_PERSON."'                     
+            INNER JOIN ccmp_company 
+                ON ccuc_ccmp_id = ccmp_company.ccmp_id 
+            INNER JOIN authassignment aa 
+                ON user.id = aa.userid 
+                    AND aa.itemname = '".Yii::app()->getModule('user')->customerUser['role']."' 
+                
+        ";
+        $criteria->order = '`ccmp_company`.`ccmp_name`';
+        $criteria->group = 'user.id';
         
         return new CActiveDataProvider(get_class($this), array(
             'criteria'=>$criteria,

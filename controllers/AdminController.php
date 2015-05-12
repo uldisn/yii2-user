@@ -32,7 +32,8 @@ class AdminController extends Controller
 				'actions'=>array(
                     'admin','delete','create','update','view',
                     'genCodeCard','emailInvitation','customerAdmin',
-                    'viewCustomer','editableSaver','customerAjaxCompanyAdd'
+                    'viewCustomer','editableSaver','customerAjaxCompanyAdd',
+                    'deleteCustomer'
                     ),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
 			),
@@ -440,30 +441,43 @@ class AdminController extends Controller
 
 
 	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'index' page.
-	 */
-	public function actionDelete()
-	{
-		if(Yii::app()->request->isPostRequest)
-		{
-			// we only allow deletion via POST request
-			$model = $this->loadModel();
-			$profile = Profile::model()->findByPk($model->id);
-			
-			// Make sure profile exists
-			if ($profile)
-				$profile->delete();
+     * Deletes a particular model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     */
+    public function actionDelete() {
 
-			$model->delete();
-			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			if(!isset($_POST['ajax']))
-				$this->redirect(array('/user/admin'));
-		}
-		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
-	}
-    
+        $model = $this->loadModel();
+        $profile = Profile::model()->findByPk($model->id);
+
+        // Make sure profile exists
+//        if ($profile)
+//            $profile->delete();
+
+        $model->delete();
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_POST['ajax']))
+            $this->redirect(array('/user/admin'));
+    }
+
+    /**
+     * Deletes customer.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     */
+    public function actionDeleteCustomer() {
+
+        $model = $this->loadModel();
+        $profile = Profile::model()->findByPk($model->id);
+
+        // Make sure profile exists
+//        if ($profile)
+//            $profile->delete();
+
+        $model->delete();
+        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+        if (!isset($_POST['ajax']))
+            $this->redirect(array('/user/admin/customerAdmin'));
+    }
+
     public function actionGenCodeCard($request_type)
     {
         

@@ -27,6 +27,7 @@ class User extends CActiveRecord
 	 * @var integer $status
      * @var timestamp $create_at
      * @var timestamp $lastvisit_at
+     * @var integer $deleted
 	 */
 
 	/**
@@ -94,30 +95,6 @@ class User extends CActiveRecord
         }
         
         return array();
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.CConsoleApplication        
-//        return ((get_class(Yii::app())=='CConsoleApplication' || (get_class(Yii::app())!='CConsoleApplication' && Yii::app()->user->checkAccess('UserAdmin')))?array(
-//			array('username', 'length', 'max'=>128, 'min' => 3,'message' => UserModule::t("Incorrect username (minimal length 3 characters).")),
-//			array('password', 'length', 'max'=>128, 'min' => 4,'message' => UserModule::t("Incorrect password (minimal length 4 symbols).")),
-//			array('email', 'email'),
-//			array('username', 'unique', 'message' => UserModule::t("This user's name already exists.")),
-//			array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-//			array('username', 'match', 'pattern' => '/^[A-Za-z0-9_@\.]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
-//			array('status', 'in', 'range'=>array(self::STATUS_NOACTIVE,self::STATUS_ACTIVE,self::STATUS_BANNED)),
-//			array('superuser', 'in', 'range'=>array(0,1)),
-//            array('create_at', 'default', 'value' => date('Y-m-d H:i:s'), 'setOnEmpty' => true, 'on' => 'insert'),
-//            array('lastvisit_at', 'default', 'value' => '0000-00-00 00:00:00', 'setOnEmpty' => true, 'on' => 'insert'),
-//			array('username, email, superuser, status,password', 'required'),
-//			array('superuser, status', 'numerical', 'integerOnly'=>true),
-//			array('id, username, password, email, activkey, create_at, lastvisit_at, superuser, status, ccmp_id', 'safe', 'on'=>'search'),
-//		):((Yii::app()->user->id==$this->id)?array(
-//			array('username, email', 'required'),
-//			array('username', 'length', 'max'=>20, 'min' => 3,'message' => UserModule::t("Incorrect username (length between 3 and 20 characters).")),
-//			array('email', 'email'),
-//			array('username', 'unique', 'message' => UserModule::t("This user's name already exists.")),
-//			array('username', 'match', 'pattern' => '/^[A-Za-z0-9_]+$/u','message' => UserModule::t("Incorrect symbols (A-z0-9).")),
-//			array('email', 'unique', 'message' => UserModule::t("This user's email address already exists.")),
-//		):array()));
 	}
 
 	/**
@@ -151,6 +128,7 @@ class User extends CActiveRecord
 			'superuser' => UserModule::t("Superuser"),
 			'status' => UserModule::t("Status"),
 			'ccmp_id' => UserModule::t("company"),
+			'deleted' => UserModule::t("Deleted"),
 		);
 	}
 	
@@ -231,6 +209,7 @@ class User extends CActiveRecord
         $criteria=new CDbCriteria;
         
         $criteria->compare('id',$this->id);
+        $criteria->compare('deleted',0);
         $criteria->compare('username',$this->username,true);
         $criteria->compare('password',$this->password);
         $criteria->compare('email',$this->email,true);
@@ -268,6 +247,7 @@ class User extends CActiveRecord
         $criteria->select .= ",GROUP_CONCAT(`ccmp_company`.`ccmp_name` SEPARATOR '<br/>') as ccmp_name";
 
         $criteria->compare('id',$this->id);
+        $criteria->compare('deleted',0);
         $criteria->compare('username',$this->username,true);
         $criteria->compare('email',$this->email,true);
         $criteria->compare('create_at',$this->create_at);
@@ -338,5 +318,11 @@ class User extends CActiveRecord
         $this->status = self::STATUS_ACTIVE;
     }
 
+    public function delete() {
+        $this->deleted = 1;
+        $this->status = self::STATUS_NOACTIVE;
+        $this->save();
+        return true;
+    }
     
 }

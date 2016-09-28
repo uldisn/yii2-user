@@ -32,11 +32,23 @@ class AdminController extends Controller
 				'actions'=>array(
                     'admin','delete','create','update','view',
                     'genCodeCard','emailInvitation','customerAdmin',
-                    'viewCustomer','editableSaver','customerAjaxCompanyAdd',
+                    'viewCustomer','editableSaver', 'editableSaverProfile' , 'customerAjaxCompanyAdd',
                     'deleteCustomer'
                     ),
 				'expression'=>"Yii::app()->user->checkAccess('UserAdmin')",
+                                                        
 			),
+                    
+                                                
+                    // ep for Customers
+                    array('allow', 
+		     'actions'=>array('editableSaverProfile' ),
+				'roles' => array('Client'),
+                                                        
+			),
+                    
+                    
+                    
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -397,6 +409,12 @@ class AdminController extends Controller
         $es = new EditableSaver('User'); // classname of model to be updated
         $es->update();
     }    
+    
+     public function actionEditableSaverProfile()
+    {
+        $es = new EditableSaver('Profile'); // classname of model to be updated
+        $es->update();
+    }  
     
 	/**
 	 * Updates a particular model.

@@ -616,14 +616,19 @@ class AdminController extends Controller
         
         //message
         $subject = Yii::app()->name;        
-        $message = 'For access to system please use. <br />
-                    link: '.Yii::app()->getBaseUrl(true) . '/<br />
-                    username: <b>'. $model->username.'</b>,
-                    password:<b> '.$password.'</b>';
+        $message = 'To access BFS Group account  please use: <br />
+                    Prisijungimas prie BFS Group paskyros: <br /> <br />
+                    link/nuoroda: '.Yii::app()->getBaseUrl(true) . '/<br />
+                    username/prisijungimo vardas: <b>'. $model->username.'</b>,
+                    password/slaptažodis:<b> '.$password.'</b>';
 
         Yii::import('vendor.dbrisinajumi.d2mailer.components.*');
         $d2mailer = new d2mailer();
-        if($d2mailer->sendMailToUser($model->id,$subject,$message) === false){
+        
+        if (isset($_GET['self'])) $recipient = Yii::app()->user->id;
+        else $recipient = $model->id;
+        
+        if($d2mailer->sendMailToUser($recipient,$subject,$message) === false){
             $this->redirect(array('view','id'=>$model->id,'sent' => 'error'));                    
         }else{
             $this->redirect(array('view','id'=>$model->id,'sent' => 'ok'));        

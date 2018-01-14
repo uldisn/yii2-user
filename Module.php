@@ -101,4 +101,14 @@ class Module extends BaseModule
 
     /** @var array settings for class yii\web\User */
     public $yiiWebUser = [];
+
+    /**
+     * @var bool
+     */
+    public $email_required = true;
+
+    /**
+     * @var bool
+     */
+    public $canAdminChangePassword = false;
 }

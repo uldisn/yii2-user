@@ -79,6 +79,11 @@ class User extends ActiveRecord implements IdentityInterface
     /** @var string Default username regexp */
     public static $usernameRegexp = '/^[-a-zA-Z0-9_\.@]+$/';
 
+    /** @var \dektrium\user\Module */
+    private $module;
+
+
+
     /**
      * @return Finder
      * @throws \yii\base\InvalidConfigException
@@ -206,7 +211,7 @@ class User extends ActiveRecord implements IdentityInterface
     /** @inheritdoc */
     public function rules()
     {
-        return [
+        $rules = [
             // username rules
             'usernameRequired' => ['username', 'required', 'on' => ['register', 'create', 'connect', 'update']],
             'usernameMatch'    => ['username', 'match', 'pattern' => static::$usernameRegexp],
@@ -217,15 +222,13 @@ class User extends ActiveRecord implements IdentityInterface
                 'message' => \Yii::t('user', 'This username has already been taken')
             ],
             'usernameTrim'     => ['username', 'trim'],
-
-            // email rules
-            'emailRequired' => ['email', 'required', 'on' => ['register', 'connect', 'create', 'update']],
-            'emailPattern'  => ['email', 'email'],
+            'emailPattern'  => ['email', 'email','skipOnEmpty' => true],
             'emailLength'   => ['email', 'string', 'max' => 255],
             'emailUnique'   => [
                 'email',
                 'unique',
-                'message' => \Yii::t('user', 'This email address has already been taken')
+                'skipOnEmpty' => true,
+                'message' => \Yii::t('user', 'This email address has already been taken'),
             ],
             'emailTrim'     => ['email', 'trim'],
 
@@ -233,6 +236,16 @@ class User extends ActiveRecord implements IdentityInterface
             'passwordRequired' => ['password', 'required', 'on' => ['register']],
             'passwordLength'   => ['password', 'string', 'min' => 6, 'max' => 72, 'on' => ['register', 'create']],
         ];
+        if($this->getModule()->email_required){
+            $rules['emailRequired'] = [
+                'email',
+                'required',
+                'on' => ['register', 'connect', 'create', 'update'],
+                'when' => $this->getModule()->email_required,
+            ];
+        }
+
+        return $rules;
     }
 
     /** @inheritdoc */
@@ -256,7 +269,7 @@ class User extends ActiveRecord implements IdentityInterface
 
         try {
             $this->confirmed_at = time();
-            $this->password = $this->password == null ? Password::generate(8) : $this->password;
+            $this->password = $this->password??Password::generate(16);
 
             $this->trigger(self::BEFORE_CREATE);
 
@@ -265,7 +278,9 @@ class User extends ActiveRecord implements IdentityInterface
                 return false;
             }
 
-            $this->mailer->sendWelcomeMessage($this, null, true);
+            if($this->email) {
+                $this->mailer->sendWelcomeMessage($this, null, true);
+            }
             $this->trigger(self::AFTER_CREATE);
 
             $transaction->commit();

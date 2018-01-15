@@ -79,11 +79,6 @@ class User extends ActiveRecord implements IdentityInterface
     /** @var string Default username regexp */
     public static $usernameRegexp = '/^[-a-zA-Z0-9_\.@]+$/';
 
-    /** @var \dektrium\user\Module */
-    private $module;
-
-
-
     /**
      * @return Finder
      * @throws \yii\base\InvalidConfigException

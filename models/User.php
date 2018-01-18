@@ -236,7 +236,6 @@ class User extends ActiveRecord implements IdentityInterface
                 'email',
                 'required',
                 'on' => ['register', 'connect', 'create', 'update'],
-                'when' => $this->getModule()->email_required,
             ];
         }
 

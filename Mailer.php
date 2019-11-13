@@ -15,14 +15,13 @@ use dektrium\user\models\Token;
 use dektrium\user\models\User;
 use Yii;
 use yii\base\Component;
-use yii\mail\BaseMailer;
 
 /**
  * Mailer.
  *
  * @author Dmitry Erofeev <dmeroff@gmail.com>
  */
-class Mailer  extends Component implements MailerInterface
+class Mailer extends Component
 {
     /** @var string */
     public $viewPath = '@dektrium/user/views/mail';
@@ -42,7 +41,7 @@ class Mailer  extends Component implements MailerInterface
     /** @var string */
     protected $recoverySubject;
 
-    /** @var Module */
+    /** @var \dektrium\user\Module */
     protected $module;
 
     /**
@@ -221,7 +220,7 @@ class Mailer  extends Component implements MailerInterface
      */
     protected function sendMessage($to, $subject, $view, $params = [])
     {
-        /** @var BaseMailer $mailer */
+        /** @var \yii\mail\BaseMailer $mailer */
         $mailer = Yii::$app->mailer;
         $mailer->viewPath = $this->viewPath;
         $mailer->getView()->theme = Yii::$app->view->theme;

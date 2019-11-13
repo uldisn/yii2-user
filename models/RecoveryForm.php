@@ -48,11 +48,11 @@ class RecoveryForm extends Model
     protected $finder;
 
     /**
-     * @param Mailer $mailer
+     * @param MailerInterface $mailer
      * @param Finder $finder
      * @param array  $config
      */
-    public function __construct(MailerInterface $mailer, Finder $finder, $config = [])
+    public function __construct( $mailer, Finder $finder, $config = [])
     {
         $this->mailer = $mailer;
         $this->finder = $finder;

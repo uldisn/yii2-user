@@ -226,9 +226,7 @@ class Mailer extends Component
         $mailer->getView()->theme = Yii::$app->view->theme;
 
         if ($this->sender === null) {
-            $this->sender = isset(Yii::$app->params['adminEmail']) ?
-                Yii::$app->params['adminEmail']
-                : 'no-reply@example.com';
+            $this->sender = Yii::$app->params['adminEmail'] ?? 'no-reply@example.com';
         }
 
         return $mailer->compose(['html' => $view, 'text' => 'text/' . $view], $params)

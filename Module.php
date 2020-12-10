@@ -24,6 +24,9 @@ class Module extends BaseModule
 {
     const VERSION = '0.9.9';
 
+    /** @var bool Toggle access to editing fields. */
+    public $disableEditSelfUserDetails = false;
+    
     /** Email is changed right after user enter's new email address. */
     const STRATEGY_INSECURE = 0;
 

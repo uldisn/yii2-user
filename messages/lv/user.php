@@ -54,7 +54,7 @@ return [
     'Block status' => 'Bloķēšana',
     'Blocked at {0, date, MMMM dd, YYYY HH:mm}' => 'Bloķēts  {0, date, MMMM dd, YYYY HH:mm}',
     'Change your avatar at Gravatar.com' => 'Izmainīt jūsu avataru saitē Gravatar.com',
-    'Complete password reset on {0}' => 'Parole veiksmīgi nomainīta {0}',
+    'Complete password reset on {0}' => 'Pieprasījums mainīt paroli',
     'Confirm' => 'Apstiprināt',
     'Confirm account on {0}' => 'Apstiprināt kontu uz {0}',
     'Confirm email change on {0}' => 'Apstiprināt e-pasta adreses maiņu uz {0}',

@@ -58,7 +58,7 @@ class RegistrationForm extends Model
                 'message' => Yii::t('user', 'This username has already been taken')
             ],
             // email rules
-            'emailTrim'     => ['email', 'filter', 'filter' => 'trim'],
+            'emailTrim'     => ['email', 'trim', 'filter' => 'trim'],
             'emailRequired' => ['email', 'required'],
             'emailPattern'  => ['email', 'email'],
             'emailUnique'   => [

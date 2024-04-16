@@ -115,6 +115,7 @@ return [
     'Profile details' => 'Профиль',
     'Profile details have been updated' => 'Профиль пользователя был обновлен',
     'Profile settings' => 'Настройки профиля',
+    'Profile Image' => 'Фото профиля',
     'Recover your password' => 'Восстановить пароль',
     'Recovery link is invalid or expired. Please try requesting a new one.' => 'Ссылка для смены пароля неправильна или устарела. Пожалуйста, попробуйте запросить новую ссылку.',
     'Recovery message sent' => 'Письмо для сброса пароля было отправлено',

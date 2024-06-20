@@ -90,7 +90,8 @@ class RecoveryController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    ['allow' => true, 'actions' => ['request', 'reset'], 'roles' => ['?']],
+                    ['allow' => true, 'actions' => ['reset'], 'roles' => ['@']],
+                    ['allow' => true, 'actions' => ['request'], 'roles' => ['?']],
                 ],
             ],
         ];

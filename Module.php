@@ -22,11 +22,8 @@ use yii\base\Module as BaseModule;
  */
 class Module extends BaseModule
 {
-    const VERSION = '0.9.9';
+    const VERSION = '0.9.12';
 
-    /** @var bool Toggle access to editing fields. */
-    public $disableEditSelfUserDetails = false;
-    
     /** Email is changed right after user enter's new email address. */
     const STRATEGY_INSECURE = 0;
 
@@ -56,6 +53,9 @@ class Module extends BaseModule
 
     /** @var bool Whether user can remove his account */
     public $enableAccountDelete = false;
+
+    /** @var bool Enable the 'impersonate as another user' function */
+    public $enableImpersonateUser = true;
 
     /** @var int Email changing strategy. */
     public $emailChangeStrategy = self::STRATEGY_DEFAULT;
@@ -91,10 +91,19 @@ class Module extends BaseModule
      */
     public $urlPrefix = 'user';
 
+    /**
+     * @var bool Is the user module in DEBUG mode? Will be set to false automatically
+     * if the application leaves DEBUG mode.
+     */
+    public $debug = false;
+
+    /** @var string The database connection to use for models in this module. */
+    public $dbConnection = 'db';
+
     /** @var array The rules to be used in URL management. */
     public $urlRules = [
         '<id:\d+>'                               => 'profile/show',
-        '<action:(login|logout)>'                => 'security/<action>',
+        '<action:(login|logout|auth)>'           => 'security/<action>',
         '<action:(register|resend)>'             => 'registration/<action>',
         'confirm/<id:\d+>/<code:[A-Za-z0-9_-]+>' => 'registration/confirm',
         'forgot'                                 => 'recovery/request',
@@ -102,16 +111,11 @@ class Module extends BaseModule
         'settings/<action:\w+>'                  => 'settings/<action>'
     ];
 
-    /** @var array settings for class yii\web\User */
-    public $yiiWebUser = [];
-
     /**
-     * @var bool
+     * @return string
      */
-    public $email_required = true;
-
-    /**
-     * @var bool
-     */
-    public $canAdminChangePassword = false;
+    public function getDb()
+    {
+        return \Yii::$app->get($this->dbConnection);
+    }
 }

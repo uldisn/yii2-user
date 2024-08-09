@@ -41,6 +41,69 @@ id query parameter.
 Route **/user/admin/delete** deletes an user account. To access this route you should specify id query parameter and do
 a POST request. Be careful, you will not be able to restore deleted account.
 
+### Impersonate User / Become another user
+
+Route **/user/admin/switch** becomes an user for the current session. You need to be an administrator to use this
+feature. Place something like this in your view file to allow to jump back when being impersonated as another person:
+
+```
+if (Yii::$app->session->has(\dektrium\user\controllers\AdminController::ORIGINAL_USER_SESSION_KEY))
+    echo Html::a(
+    '<span class="glyphicon glyphicon-user"></span> ' . Yii::t('main', 'Back to original user'),
+     ['/user/admin/switch'], ['class' => 'btn btn-primary', 'data-method' => 'POST']);
+```
+
+or
+
+```
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav navbar-right'],
+    'items' => [
+        Yii::$app->session->has(\dektrium\user\controllers\AdminController::ORIGINAL_USER_SESSION_KEY) ?
+        '<li>' . Html::beginForm(['/user/admin/switch'], 'post', ['class' => 'navbar-form'])
+            . Html::submitButton('<span class="glyphicon glyphicon-user"></span> ' . Yii::t('user', 'Back to original user'),
+                ['class' => 'btn btn-link']
+            ) . Html::endForm() . '</li>' : '',
+      ],
+    ]);
+```
+
+You can declare module options 'adminPermission'. Access to action `switch` must be prefaced to all:
+```
+    'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'adminPermission' => 'administrateUser',
+        ],
+    ],
+```
+```
+    'modules' => [
+        'user' => [
+            'controllerMap' => [
+                'admin' => [
+                    'class' => 'dektrium\user\controllers\AdminController',
+                    'as access' => [
+                        'class' => 'yii\filters\AccessControl',
+                        'rules' => [
+                            [
+                                'allow' => true,
+                                'roles' => ['administrateUser'],
+                            ],
+                            [
+                                'actions' => ['switch'],
+                                'allow' => true,
+                                'roles' => ['@'],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+```
+
+
 ##Changing CRUD layout
 
 Sometimes you will need to have different layouts for frontend and backend pages. It is really easy to change admin layout:

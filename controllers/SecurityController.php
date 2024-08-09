@@ -109,7 +109,7 @@ class SecurityController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    ['allow' => true, 'actions' => ['login', 'auth', 'blocked'], 'roles' => ['?']],
+                    ['allow' => true, 'actions' => ['login', 'auth'], 'roles' => ['?']],
                     ['allow' => true, 'actions' => ['login', 'auth', 'logout'], 'roles' => ['@']],
                 ],
             ],
@@ -153,6 +153,7 @@ class SecurityController extends Controller
         $event = $this->getFormEvent($model);
 
         $this->performAjaxValidation($model);
+
         $this->trigger(self::EVENT_BEFORE_LOGIN, $event);
 
         if ($model->load(\Yii::$app->getRequest()->post()) && $model->login()) {
@@ -216,6 +217,7 @@ class SecurityController extends Controller
                 \Yii::$app->session->setFlash('danger', \Yii::t('user', 'Your account has been blocked.'));
                 $this->action->successUrl = Url::to(['/user/security/login']);
             } else {
+                $account->user->updateAttributes(['last_login_at' => time()]);
                 \Yii::$app->user->login($account->user, $this->module->rememberFor);
                 $this->action->successUrl = \Yii::$app->getUser()->getReturnUrl();
             }

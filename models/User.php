@@ -23,6 +23,7 @@ use yii\web\Application as WebApplication;
 use yii\web\IdentityInterface;
 use yii\helpers\ArrayHelper;
 
+
 /**
  * User ActiveRecord model.
  *
@@ -37,11 +38,12 @@ use yii\helpers\ArrayHelper;
  * @property string  $unconfirmed_email
  * @property string  $password_hash
  * @property string  $auth_key
- * @property integer $registration_ip
+ * @property string  $registration_ip
  * @property integer $confirmed_at
  * @property integer $blocked_at
  * @property integer $created_at
  * @property integer $updated_at
+ * @property integer $last_login_at
  * @property integer $flags
  *
  * Defined relations:
@@ -120,7 +122,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return
             (\Yii::$app->getAuthManager() && $this->module->adminPermission ?
-                \Yii::$app->user->can($this->module->adminPermission) : false)
+                \Yii::$app->authManager->checkAccess($this->id, $this->module->adminPermission) : false)
             || in_array($this->username, $this->module->admins);
     }
 
@@ -156,6 +158,19 @@ class User extends ActiveRecord implements IdentityInterface
         return $connected;
     }
 
+    /**
+     * Returns connected account by provider.
+     * @param  string $provider
+     * @return Account|null
+     */
+    public function getAccountByProvider($provider)
+    {
+        $accounts = $this->getAccounts();
+        return isset($accounts[$provider])
+            ? $accounts[$provider]
+            : null;
+    }
+
     /** @inheritdoc */
     public function getId()
     {
@@ -178,6 +193,7 @@ class User extends ActiveRecord implements IdentityInterface
             'unconfirmed_email' => \Yii::t('user', 'New email'),
             'password'          => \Yii::t('user', 'Password'),
             'created_at'        => \Yii::t('user', 'Registration time'),
+            'last_login_at'     => \Yii::t('user', 'Last login'),
             'confirmed_at'      => \Yii::t('user', 'Confirmation time'),
         ];
     }
@@ -206,8 +222,9 @@ class User extends ActiveRecord implements IdentityInterface
     /** @inheritdoc */
     public function rules()
     {
-        $rules = [
+        return [
             // username rules
+            'usernameTrim'     => ['username', 'trim'],
             'usernameRequired' => ['username', 'required', 'on' => ['register', 'create', 'connect', 'update']],
             'usernameMatch'    => ['username', 'match', 'pattern' => static::$usernameRegexp],
             'usernameLength'   => ['username', 'string', 'min' => 3, 'max' => 255],
@@ -216,30 +233,22 @@ class User extends ActiveRecord implements IdentityInterface
                 'unique',
                 'message' => \Yii::t('user', 'This username has already been taken')
             ],
-            'usernameTrim'     => ['username', 'trim'],
-            'emailPattern'  => ['email', 'email','skipOnEmpty' => true],
+
+            // email rules
+            'emailTrim'     => ['email', 'trim'],
+            'emailRequired' => ['email', 'required', 'on' => ['register', 'connect', 'create', 'update']],
+            'emailPattern'  => ['email', 'email'],
             'emailLength'   => ['email', 'string', 'max' => 255],
             'emailUnique'   => [
                 'email',
                 'unique',
-                'skipOnEmpty' => true,
-                'message' => \Yii::t('user', 'This email address has already been taken'),
+                'message' => \Yii::t('user', 'This email address has already been taken')
             ],
-            'emailTrim'     => ['email', 'trim'],
 
             // password rules
             'passwordRequired' => ['password', 'required', 'on' => ['register']],
             'passwordLength'   => ['password', 'string', 'min' => 6, 'max' => 72, 'on' => ['register', 'create']],
         ];
-        if($this->getModule()->email_required){
-            $rules['emailRequired'] = [
-                'email',
-                'required',
-                'on' => ['register', 'connect', 'create', 'update'],
-            ];
-        }
-
-        return $rules;
     }
 
     /** @inheritdoc */
@@ -249,7 +258,8 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * Creates new user account. It generates password if it is not provided by user.
+     * Creates new user account. If Module::enableGeneratingPassword is set true, this method
+     * will generate password.
      *
      * @return bool
      */
@@ -262,8 +272,7 @@ class User extends ActiveRecord implements IdentityInterface
         $transaction = $this->getDb()->beginTransaction();
 
         try {
-            $this->confirmed_at = time();
-            $this->password = $this->password??Password::generate(16);
+            $this->password = ($this->password == null && $this->module->enableGeneratingPassword) ? Password::generate(8) : $this->password;
 
             $this->trigger(self::BEFORE_CREATE);
 
@@ -272,9 +281,9 @@ class User extends ActiveRecord implements IdentityInterface
                 return false;
             }
 
-            if($this->email) {
-                $this->mailer->sendWelcomeMessage($this, null, true);
-            }
+            $this->confirm();
+
+            $this->mailer->sendWelcomeMessage($this, null, true);
             $this->trigger(self::AFTER_CREATE);
 
             $transaction->commit();
@@ -283,7 +292,7 @@ class User extends ActiveRecord implements IdentityInterface
         } catch (\Exception $e) {
             $transaction->rollBack();
             \Yii::warning($e->getMessage());
-            return false;
+            throw $e;
         }
     }
 
@@ -327,7 +336,7 @@ class User extends ActiveRecord implements IdentityInterface
         } catch (\Exception $e) {
             $transaction->rollBack();
             \Yii::warning($e->getMessage());
-            return false;
+            throw $e;
         }
     }
 
@@ -358,6 +367,21 @@ class User extends ActiveRecord implements IdentityInterface
         \Yii::$app->session->setFlash($success ? 'success' : 'danger', $message);
 
         return $success;
+    }
+
+    /**
+     * Generates a new password and sends it to the user.
+     *
+     * @param string $code Confirmation code.
+     *
+     * @return boolean
+     */
+    public function resendPassword()
+    {
+        $this->password = Password::generate(8);
+        $this->save(false, ['password_hash']);
+
+        return $this->mailer->sendGeneratedPassword($this, $this->password);
     }
 
     /**

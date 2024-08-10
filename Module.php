@@ -26,7 +26,7 @@ class Module extends BaseModule
 
     /** @var bool Toggle access to editing fields. */
     public $disableEditSelfUserDetails = false;
-    
+
     /** Email is changed right after user enter's new email address. */
     const STRATEGY_INSECURE = 0;
 
@@ -53,6 +53,9 @@ class Module extends BaseModule
 
     /** @var bool Whether to enable password recovery. */
     public $enablePasswordRecovery = true;
+
+    /** @var bool Whether to enable Remember Me option. */
+    public $enableRememberMe = true;
 
     /** @var bool Whether user can remove his account */
     public $enableAccountDelete = false;

@@ -18,6 +18,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'This action can only be performed by users who are not logged in. Please log out and try again.' => 'Šo darbību var veikt tikai lietotāji, kuri nav pieteikušies. Lūdzu, izrakstieties un mēģiniet vēlreiz.',
     'We have generated a password for you' => 'Mēs uzģenerējām jūsu paroli',
     'Your account has been created and a message with further instructions has been sent to your email' => 'Jūsu konts ir izveidots un tālākās instrukcijas nosūtītas uz jūsu e-pastu',
     'In order to finish your registration, we need you to enter your email address' => 'Lai pabeigtu reģistrāciju, jums ir jaievada sava e-pasta adrese',

@@ -103,7 +103,7 @@ class RecoveryController extends Controller
                         'matchCallback' => function () {
                             if(!Yii::$app->user->isGuest ) {
                                 throw new ForbiddenHttpException(
-                                    Yii::t('yii', 'This action can only be performed by users who are not logged in. Please log out and try again.')
+                                    Yii::t('user', 'This action can only be performed by users who are not logged in. Please log out and try again.')
                                 );
                             }
 

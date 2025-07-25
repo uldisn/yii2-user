@@ -17,6 +17,7 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'This action can only be performed by users who are not logged in. Please log out and try again.' => 'Это действие доступно только для пользователей, не вошедших в систему. Пожалуйста, выйдите из аккаунта и попробуйте снова.',
     'Are you sure? There is no going back' => 'Вы уверены? Это действие невозможно отменить',
     'Delete account' => 'Удалить аккаунт',
     'In order to finish your registration, we need you to enter following fields' => 'Чтобы закончить регистрацию, вы должны заполнить следующие поля',

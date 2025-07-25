@@ -18,7 +18,9 @@ use dektrium\user\traits\AjaxValidationTrait;
 use dektrium\user\traits\EventTrait;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
+use Yii;
 
 /**
  * RecoveryController manages password recovery process.
@@ -90,7 +92,24 @@ class RecoveryController extends Controller
             'access' => [
                 'class' => AccessControl::className(),
                 'rules' => [
-                    ['allow' => true, 'actions' => ['request', 'reset'], 'roles' => ['?']],
+                    [
+                        'allow' => true,
+                        'actions' => ['request'],
+                        'roles' => ['?']
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['reset'],
+                        'matchCallback' => function () {
+                            if(!Yii::$app->user->isGuest ) {
+                                throw new ForbiddenHttpException(
+                                    Yii::t('yii', 'This action can only be performed by users who are not logged in. Please log out and try again.')
+                                );
+                            }
+
+                            return true;
+                        }
+                    ],
                 ],
             ],
         ];

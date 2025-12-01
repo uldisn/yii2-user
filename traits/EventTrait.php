@@ -22,7 +22,9 @@ use dektrium\user\models\Profile;
 use dektrium\user\models\RecoveryForm;
 use dektrium\user\models\Token;
 use dektrium\user\models\User;
+use Yii;
 use yii\authclient\ClientInterface;
+use yii\base\InvalidConfigException;
 use yii\base\Model;
 
 /**
@@ -33,31 +35,31 @@ trait EventTrait
     /**
      * @param  Model     $form
      * @return FormEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function getFormEvent(Model $form)
     {
-        return \Yii::createObject(['class' => FormEvent::className(), 'form' => $form]);
+        return Yii::createObject(['class' => FormEvent::class, 'form' => $form]);
     }
 
     /**
      * @param  User      $user
      * @return UserEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function getUserEvent(User $user)
     {
-        return \Yii::createObject(['class' => UserEvent::className(), 'user' => $user]);
+        return Yii::createObject(['class' => UserEvent::class, 'user' => $user]);
     }
 
     /**
      * @param  Profile      $profile
      * @return ProfileEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function getProfileEvent(Profile $profile)
     {
-        return \Yii::createObject(['class' => ProfileEvent::className(), 'profile' => $profile]);
+        return Yii::createObject(['class' => ProfileEvent::class, 'profile' => $profile]);
     }
 
 
@@ -65,32 +67,32 @@ trait EventTrait
      * @param  Account      $account
      * @param  User         $user
      * @return ConnectEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function getConnectEvent(Account $account, User $user)
     {
-        return \Yii::createObject(['class' => ConnectEvent::className(), 'account' => $account, 'user' => $user]);
+        return Yii::createObject(['class' => ConnectEvent::class, 'account' => $account, 'user' => $user]);
     }
 
     /**
      * @param  Account         $account
      * @param  ClientInterface $client
      * @return AuthEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function getAuthEvent(Account $account, ClientInterface $client)
     {
-        return \Yii::createObject(['class' => AuthEvent::className(), 'account' => $account, 'client' => $client]);
+        return Yii::createObject(['class' => AuthEvent::class, 'account' => $account, 'client' => $client]);
     }
 
     /**
      * @param  Token        $token
      * @param  RecoveryForm $form
      * @return ResetPasswordEvent
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
-    protected function getResetPasswordEvent(Token $token = null, RecoveryForm $form = null)
+    protected function getResetPasswordEvent(?Token $token = null, ?RecoveryForm $form = null)
     {
-        return \Yii::createObject(['class' => ResetPasswordEvent::className(), 'token' => $token, 'form' => $form]);
+        return Yii::createObject(['class' => ResetPasswordEvent::class, 'token' => $token, 'form' => $form]);
     }
 }

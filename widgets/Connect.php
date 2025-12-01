@@ -53,9 +53,9 @@ class Connect extends AuthChoice
     {
         if ($this->isConnected($provider)) {
             return Url::to(['/user/settings/disconnect', 'id' => $this->accounts[$provider->getId()]->id]);
-        } else {
-            return parent::createClientUrl($provider);
         }
+
+        return parent::createClientUrl($provider);
     }
 
     /**

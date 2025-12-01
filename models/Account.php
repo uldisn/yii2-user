@@ -15,8 +15,11 @@ use dektrium\user\clients\ClientInterface;
 use dektrium\user\Finder;
 use dektrium\user\models\query\AccountQuery;
 use dektrium\user\traits\ModuleTrait;
+use Yii;
 use yii\authclient\ClientInterface as BaseClientInterface;
+use yii\base\InvalidConfigException;
 use yii\db\ActiveRecord;
+use yii\db\Exception;
 use yii\helpers\Json;
 use yii\helpers\Url;
 
@@ -86,7 +89,7 @@ class Account extends ActiveRecord
      */
     public function getConnectUrl()
     {
-        $code = \Yii::$app->security->generateRandomString();
+        $code = Yii::$app->security->generateRandomString();
         $this->updateAttributes(['code' => md5($code)]);
 
         return Url::to(['/user/registration/connect', 'code' => $code]);
@@ -107,14 +110,18 @@ class Account extends ActiveRecord
      */
     public static function find()
     {
-        return \Yii::createObject(AccountQuery::className(), [get_called_class()]);
+        return Yii::createObject(AccountQuery::class, [get_called_class()]);
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
     public static function create(BaseClientInterface $client)
     {
         /** @var Account $account */
-        $account = \Yii::createObject([
-            'class'      => static::className(),
+        $account = Yii::createObject([
+            'class'      => static::class,
             'provider'   => $client->getId(),
             'client_id'  => $client->getUserAttributes()['id'],
             'data'       => Json::encode($client->getUserAttributes()),
@@ -143,8 +150,8 @@ class Account extends ActiveRecord
      */
     public static function connectWithUser(BaseClientInterface $client)
     {
-        if (\Yii::$app->user->isGuest) {
-            \Yii::$app->session->setFlash('danger', \Yii::t('user', 'Something went wrong'));
+        if (Yii::$app->user->isGuest) {
+            Yii::$app->session->setFlash('danger', Yii::t('user', 'Something went wrong'));
 
             return;
         }
@@ -152,12 +159,12 @@ class Account extends ActiveRecord
         $account = static::fetchAccount($client);
 
         if ($account->user === null) {
-            $account->link('user', \Yii::$app->user->identity);
-            \Yii::$app->session->setFlash('success', \Yii::t('user', 'Your account has been connected'));
+            $account->link('user', Yii::$app->user->identity);
+            Yii::$app->session->setFlash('success', Yii::t('user', 'Your account has been connected'));
         } else {
-            \Yii::$app->session->setFlash(
+            Yii::$app->session->setFlash(
                 'danger',
-                \Yii::t('user', 'This account has already been connected to another user')
+                Yii::t('user', 'This account has already been connected to another user')
             );
         }
     }
@@ -175,8 +182,8 @@ class Account extends ActiveRecord
         $account = static::getFinder()->findAccount()->byClient($client)->one();
 
         if (null === $account) {
-            $account = \Yii::createObject([
-                'class'      => static::className(),
+            $account = Yii::createObject([
+                'class'      => static::class,
                 'provider'   => $client->getId(),
                 'client_id'  => $client->getUserAttributes()['id'],
                 'data'       => Json::encode($client->getUserAttributes()),
@@ -202,8 +209,8 @@ class Account extends ActiveRecord
             return $user;
         }
 
-        $user = \Yii::createObject([
-            'class'    => User::className(),
+        $user = Yii::createObject([
+            'class'    => User::class,
             'scenario' => 'connect',
             'username' => $account->username,
             'email'    => $account->email,
@@ -226,7 +233,7 @@ class Account extends ActiveRecord
     protected static function getFinder()
     {
         if (static::$finder === null) {
-            static::$finder = \Yii::$container->get(Finder::className());
+            static::$finder = Yii::$container->get(Finder::class);
         }
 
         return static::$finder;

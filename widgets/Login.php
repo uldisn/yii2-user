@@ -12,6 +12,7 @@
 namespace dektrium\user\widgets;
 
 use dektrium\user\models\LoginForm;
+use Yii;
 use yii\base\Widget;
 
 /**
@@ -32,7 +33,7 @@ class Login extends Widget
     public function run()
     {
         return $this->render('login', [
-            'model' => \Yii::createObject(LoginForm::className()),
+            'model' => Yii::createObject(LoginForm::class),
         ]);
     }
 }

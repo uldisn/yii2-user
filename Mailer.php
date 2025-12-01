@@ -140,7 +140,7 @@ class Mailer extends Component
      *
      * @return bool
      */
-    public function sendWelcomeMessage(User $user, Token $token = null, $showPassword = false)
+    public function sendWelcomeMessage(User $user, ?Token $token = null, $showPassword = false)
     {
         return $this->sendMessage(
             $user->email,

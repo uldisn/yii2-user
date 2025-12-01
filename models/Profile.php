@@ -11,6 +11,8 @@
 
 namespace dektrium\user\models;
 
+use DateTime;
+use DateTimeZone;
 use dektrium\user\traits\ModuleTrait;
 use yii\db\ActiveRecord;
 
@@ -111,36 +113,36 @@ class Profile extends ActiveRecord
     /**
      * Get the user's time zone.
      * Defaults to the application timezone if not specified by the user.
-     * @return \DateTimeZone
+     * @return DateTimeZone
      */
     public function getTimeZone()
     {
         try {
-            return new \DateTimeZone($this->timezone);
+            return new DateTimeZone($this->timezone);
         } catch (\Exception $e) {
             // Default to application time zone if the user hasn't set their time zone
-            return new \DateTimeZone(\Yii::$app->timeZone);
+            return new DateTimeZone(\Yii::$app->timeZone);
         }
     }
 
     /**
      * Set the user's time zone.
-     * @param \DateTimeZone $timezone the timezone to save to the user's profile
+     * @param DateTimeZone $timezone the timezone to save to the user's profile
      */
-    public function setTimeZone(\DateTimeZone $timeZone)
+    public function setTimeZone(DateTimeZone $timeZone)
     {
         $this->setAttribute('timezone', $timeZone->getName());
     }
 
     /**
      * Converts DateTime to user's local time
-     * @param \DateTime the datetime to convert
-     * @return \DateTime
+     * @param DateTime the datetime to convert
+     * @return DateTime
      */
-    public function toLocalTime(\DateTime $dateTime = null)
+    public function toLocalTime(?DateTime $dateTime = null)
     {
         if ($dateTime === null) {
-            $dateTime = new \DateTime();
+            $dateTime = new DateTime();
         }
 
         return $dateTime->setTimezone($this->getTimeZone());

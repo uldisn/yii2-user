@@ -85,7 +85,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     protected function getFinder()
     {
-        return \Yii::$container->get(Finder::className());
+        return \Yii::$container->get(Finder::class);
     }
 
     /**
@@ -94,7 +94,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     protected function getMailer()
     {
-        return \Yii::$container->get(Mailer::className());
+        return \Yii::$container->get(Mailer::class);
     }
 
     /**
@@ -186,7 +186,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 
@@ -314,7 +314,7 @@ class User extends ActiveRecord implements IdentityInterface
 
             if ($this->module->enableConfirmation) {
                 /** @var Token $token */
-                $token = \Yii::createObject(['class' => Token::className(), 'type' => Token::TYPE_CONFIRMATION]);
+                $token = \Yii::createObject(['class' => Token::class, 'type' => Token::TYPE_CONFIRMATION]);
                 $token->link('user', $this);
             }
 
@@ -518,7 +518,7 @@ class User extends ActiveRecord implements IdentityInterface
         parent::afterSave($insert, $changedAttributes);
         if ($insert) {
             if ($this->_profile == null) {
-                $this->_profile = \Yii::createObject(Profile::className());
+                $this->_profile = \Yii::createObject(Profile::class);
             }
             $this->_profile->link('user', $this);
         }
